@@ -1,6 +1,6 @@
 #Commands
 
-+ php artisan <DX_CODE> --- run parser
++ php artisan feed <DX_CODE> --- run parser
   
 #Docker commands 
 
