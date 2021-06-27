@@ -5,7 +5,7 @@ services:
         build:
             context: .
             dockerfile: docker/Php.Dockerfile
-        container_name: php_xfeeds_5
+        container_name: php_xfeeds
         restart: always
         working_dir: /var/www/app
         volumes:

@@ -4,7 +4,7 @@ COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 
 RUN apt-get update && apt-get upgrade -y && apt-get install apt-utils -y \
-    && install-php-extensions zip gd xdebug posix pcntl sockets \
+    && install-php-extensions zip gd xdebug \
     && docker-php-ext-enable xdebug \
     && docker-php-source delete \
     && apt-get autoremove --purge -y \
