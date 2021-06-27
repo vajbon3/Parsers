@@ -30,20 +30,20 @@ use Ms48\LaravelConsoleProgressBar\Facades\ConsoleProgressBar;
 abstract class AbstractProcessor
 {
     /**
-     * Указывает номера листов, которые должен обработать прай-парсер
-     * Используется в том случае, если прайс-лист содержит несколько листов с необходимой информацией
+     * Specifies the numbers of the sheets that the pry-parser should process
+     * Used if the price list contains several sheets with the necessary information
      *
-     * Для этого необходимо указать массив чисел, например [0, 1, 2] в котором каждый ключ является идентификатором листа в таблице,
-     * а значение каждого ключа является идентификатором парсера с именем вида Price<число из массива>Parser
+     * To do this, you need to specify an array of numbers, for example [0, 1, 2] in which each key is the ID of a sheet in the table,
+     * and the value of each key is the parser identifier with the name of the form Price<number from the array>Parser
      */
     public const PRICE_ACTIVE_SHEET = [ 0 ];
     public const PRICE_ACTIVE_MULTIPLE_SHEET = [];
     /**
-     * Указывает номера файлов, отсортированных в алфавитном порядке, которые должен обработать прай-парсер
-     * Используется в том случае, если необходимо обработать несколько прайс-листов
+     * Specifies the numbers of files sorted in alphabetical order that the pry-parser should process
+     * Used if you need to process several price lists
      *
-     * Аналогично PRICE_ACTIVE_SHEET необходимо указать массив, где ключи являются идентификаторами прайс-листов,
-     * а значение каждого ключа является идентификатором парсера
+     * Similarly to PRICE_ACTIVE_SHEET, you must specify an array where the keys are the identifiers of the price lists,
+     * and the value of each key is the parser ID
      */
     public const PRICE_ACTIVE_FILES = [ 0 ];
     public const FEED_TYPE_INVENTORY = 'inventory';
@@ -55,31 +55,31 @@ abstract class AbstractProcessor
     public const DX_PREFIX = null;
     public const DX_SOURCE = null;
     /**
-     * Массив css селекторов, выбирающих элементы ссылок (<a>), на категории товаров для их дальнейшего обхода
+     * An array of css selectors that select elements of links (<a>) to product categories for their further traversal
      */
     public const CATEGORY_LINK_CSS_SELECTORS = [];
     /**
-     * Массив css селекторов, выбирающих элементы ссылок (<a>), на страницы товаров для сбора информации с них
+     * An array of css selectors that select link elements (<a>) to product pages to collect information from them
      */
     public const PRODUCT_LINK_CSS_SELECTORS = [];
     /**
-     * Определяет количество ссылок, которое будет обработано за один запрос
+     * Determines the number of links that will be processed per request
      */
     protected const CHUNK_SIZE = 20;
     /**
-     * Определяет время ожидания обработки запроса в секундах
+     * Defines the waiting time for processing the request in seconds
      */
     protected const REQUEST_TIMEOUT_S = 60;
     /**
-     * Определяет задержку между отправкой запросов в секундах
+     * Determines the delay between sending requests in seconds
      */
     protected const DELAY_S = 0;
     /**
-     * Определяет использовать статичный user agent или менять его при каждом запросе
+     * Determines whether to use a static user agent or change it with each request
      */
     protected const STATIC_USER_AGENT = false;
     /**
-     * Определяет испольовать прокси или нет
+     * Determines whether to use a proxy or not
      */
     protected const USE_PROXY = false;
 
@@ -91,34 +91,34 @@ abstract class AbstractProcessor
      */
     protected HttpDownloader|FtpDownloader $downloader;
     /**
-     * @var FeedItem[] Массив объектов app/Feeds/Feed/FeedItem содержащих информацию о товарах, взятых из прайс-листа
+     * @var FeedItem[] Array of app/Feeds/Feed/FeedItem objects containing information about products taken from the price list
      */
     public array $price_items = [];
     /**
-     * @var FeedItem[] Массив объектов app/Feeds/Feed/FeedItem содержащих информацию о товарах, взятых с сайта
+     * @var FeedItem[] Array of app/Feeds/Feed/FeedItem objects containing information about products taken from the site
      */
     public array $feed_items = [];
     /**
-     * @var array Массив url адресов товаров, которые должен обработать парсер, чтобы не парсить весь сайт
-     * Используется только для тестирования работоспособности парсера
-     * Перед отправкой парсера в продакшен необходимо удалить данное свойство
+     * @var array An array of product urls that the parser must process in order not to parse the entire site
+     * Used only for testing the parser's performance
+     * Before sending the parser to production, you must delete this property
      */
     public array $custom_products = [];
     public array $dx_info = [];
     /**
-     * @var array Параметры для авторизации
+     * @var array Parameters for authorization
      *
-     * 'check_login_text' => 'Log Out' - Проверочное слово, которое отображается только авторизованным пользователям (Log Out, My account и прочие)
-     * 'auth_url' => 'https://www.authorise_uri.com/login' - Url адрес на который отправляется запрос для авторизации
-     * 'auth_form_url' => 'https://www.authorise_uri.com/login' - Url адрес страницы, на которой находится форма авторизации
-     * 'auth_info' => [] - Массив параметров для авторизации, содержит в себе все поля, которые были отправлены браузером для авторизации
-     * 'find_fields_form' => true|false - Указывает искать дополнительные поля формы авторизации перед отправкой запроса
-     * Если этот параметр будет опущен, система сочтет его значение как "true"
-     * 'api_auth' => true|false - Указывает в каком виде отправлять параметры формы авторизации ("request_payload" или "form_data")
-     * Если этот параметр будет опущен, система сочтет его значение как "false".
-     * По умолчанию параметры отправляются, как обычные поля формы
+     * 'check_login_text' = > 'Log Out' - A verification word that is displayed only to authorized users (Log Out, My account, and others)
+     * 'auth_url' = > 'https://www.authorise_uri.com/login' - The URL to which the authorization request is sent
+     * 'auth_form_url' = > 'https://www.authorise_uri.com/login' - The URL of the page where the authorization form is located
+     * 'auth_info' = > [] - An array of parameters for authorization, contains all the fields that were sent by the browser for authorization
+     * 'find_fields_form' = > true|false-Specifies to search for additional fields of the authorization form before sending the request
+     * If this parameter is omitted, the system will consider its value as "true"
+     * 'api_auth' = > true|false - Specifies in which form to send the authorization form parameters ("request_payload" or "form_data")
+     * If this parameter is omitted, the system will consider its value as "false".
+     * By default, the parameters are sent as normal form fields
      *
-     * Пример содержания auth_info:
+     * Example of the auth_info content:
      * 'auth_info' => [
      *     'login[username]' => 'user@my-email.com',
      *     'login[password]' => 'My-Password',
@@ -133,9 +133,9 @@ abstract class AbstractProcessor
     protected array $first = [];
     protected array $headers = [];
     /**
-     * @var int|null количество товаров, которое должен собрать парсер, чтобы не парсить весь сайт
-     * Используется только для тестирования работоспособности парсера
-     * Перед отправкой парсера в продакшен необходимо удалить данное свойство
+     * @var int|null the number of products that the parser must collect in order not to parse the entire site
+     * Used only for testing the parser's performance
+     * Before sending the parser to production, you must delete this property
      */
     protected ?int $max_products = null;
     protected Collection $process_queue;
@@ -144,12 +144,11 @@ abstract class AbstractProcessor
         string $code = null,
         DxRepositoryInterface $dxRepo = null,
         AbstractFeedStorage $storage = null
-    )
-    {
+    ) {
         if ( $code && $dxRepo ) {
-            //мультифиды на разные магазины
+            //multi-feeds for different stores
             $codeSplit = explode( '__', $code );
-            //Замена в префиксе Dx _ на -
+            // Replacing the Dx _ prefix with -
             $code = str_replace( '_', '-', $codeSplit[ 0 ] );
             $this->dx_info = $dxRepo->get( $code, $codeSplit[ 1 ] ?? null );
         }
@@ -164,7 +163,7 @@ abstract class AbstractProcessor
     }
 
     /**
-     * проверка на dev mode
+     * check for dev mode
      * @return bool
      */
     public function isDevMode(): bool
@@ -198,10 +197,10 @@ abstract class AbstractProcessor
     }
 
     /**
-     * Возврает все ссылки на страницы категорий, которые были найденны по селекторам, указанным в константе "CATEGORY_LINK_CSS_SELECTORS"
-     * @param Data $data Html разметка загружаемой страницы
-     * @param string $url url адрес загружаемой страницы
-     * @return array Массив ссылок, содержащий объекты app/Feeds/Utils/Link
+     * Returns all links to category pages that were found by the selectors specified in the constant "CATEGORY_LINK_CSS_SELECTORS"
+     * @param Data $data Html markup of the loaded page
+     * @param string $url the url of the loaded page
+     * @return array An array of links containing app/Feeds/Utils/Link objects
      */
     public function getCategoriesLinks( Data $data, string $url ): array
     {
@@ -213,10 +212,10 @@ abstract class AbstractProcessor
     }
 
     /**
-     * Возврает все ссылки на страницы товаров, которые были найденны по селекторам, указанным в константе "PRODUCT_LINK_CSS_SELECTORS"
-     * @param Data $data Html разметка загружаемой страницы
-     * @param string $url url адрес загружаемой страницы
-     * @return array Массив ссылок, содержащий объекты app/Feeds/Utils/Link
+     * Returns all links to product pages that were found by the selectors specified in the constant "PRODUCT_LINK_CSS_SELECTORS"
+     * @param Data $data Html markup of the loaded page
+     * @param string $url the url of the loaded page
+     * @return array An array of links containing app/Feeds/Utils/Link objects
      */
     public function getProductsLinks( Data $data, string $url ): array
     {
@@ -249,7 +248,7 @@ abstract class AbstractProcessor
     }
 
     /**
-     * Возвращает объект парсера
+     * Returns the parser object
      * @param string $prefix
      * @return ParserInterface
      */
@@ -274,7 +273,7 @@ abstract class AbstractProcessor
     }
 
     /**
-     * Возвращает объект прайс парсера
+     * Returns the price parser object
      * @param array $sheet
      * @param null $price
      * @return ParserInterface
@@ -284,20 +283,18 @@ abstract class AbstractProcessor
         $parser = 'Price';
         if ( !is_null( $price ) && key( $sheet ) && count( static::PRICE_ACTIVE_MULTIPLE_SHEET ) ) {
             $parser .= $price ? "{$price}_" . key( $sheet ) : '_' . key( $sheet );
-        }
-        else if ( $price ) {
+        } else if ( $price ) {
             $parser .= $price;
-        }
-        else {
+        } else {
             $parser .= key( $sheet ) ?: '';
         }
         return $this->getParser( $parser );
     }
 
     /**
-     * Собирает информацию о товаре со страницы
-     * @param Data $data html содержимое страницы товара
-     * @param string $url url адрес текущей страницы товара
+     * Collects information about the product from the page
+     * @param Data $data html content of the product page
+     * @param string $url the url of the current product page
      * @return FeedItem[]
      */
     protected function getFeedItems( Data $data, string $url ): array
@@ -306,8 +303,8 @@ abstract class AbstractProcessor
     }
 
     /**
-     * @param int $max_products Устанавливает максимальное количество товаров, которое должен собрать парсер, чтобы не парсить весь сайт
-     * Используетсяя только для тестирования работоспособности парсера
+     * @param int $max_products Sets the maximum number of products that the parser must collect in order not to parse the entire site
+     * It is used only for testing the functionality of the parser
      */
     public function setMaxProducts( int $max_products ): void
     {
@@ -315,7 +312,7 @@ abstract class AbstractProcessor
     }
 
     /**
-     * Загружает ссылки, переданные в массиве
+     * Loads the links passed in the array
      * @param Link[] $links
      * @return Data[]
      */
@@ -325,7 +322,7 @@ abstract class AbstractProcessor
     }
 
     /**
-     * Собирает ссылки на категории и страницы товаров
+     * Collects links to product categories and pages
      * @param $crawler
      * @param string $url
      */
@@ -347,9 +344,9 @@ abstract class AbstractProcessor
     }
 
     /**
-     * Производит слияние товаров, взятых из прайс-листа и с сайта
-     * У товаров, взятых с сайта приоритет ниже, поэтому информация из прай-листа заменит собой информацию с сайта
-     * За исключением нескольких полей
+     * Merges products taken from the price list and from the website
+     * The products taken from the site have a lower priority, so the information from the price list will replace the information from the site
+     * Except for a few fields
      * @param FeedItem[] $feed_target
      * @param FeedItem[] $feed_source
      */
@@ -394,7 +391,7 @@ abstract class AbstractProcessor
     }
 
     /**
-     * Используется для удаления невалидных товаров из фида перед сохранением
+     * Used to remove invalid products from the feed before saving
      * @param FeedItem $fi
      * @return bool
      */
@@ -417,7 +414,7 @@ abstract class AbstractProcessor
     }
 
     /**
-     * Обходит страницы категорий и собирает информацию о товарах
+     * Crawls category pages and collects information about products
      */
     final public function process(): void
     {
@@ -444,7 +441,7 @@ abstract class AbstractProcessor
             foreach ( $new_links as $current_link => $data ) {
                 if ( $data ) {
                     switch ( $this->process_queue->get( $current_link )[ 'type' ] ) {
-                        case  Collection::LINK_TYPE_CATEGORY:
+                        case Collection::LINK_TYPE_CATEGORY:
                             try {
                                 $this->parseLinks( $data, $current_link );
                             } catch ( Exception $e ) {
@@ -452,12 +449,11 @@ abstract class AbstractProcessor
                                 continue 2;
                             }
                             break;
-                        case  Collection::LINK_TYPE_PRODUCT:
+                        case Collection::LINK_TYPE_PRODUCT:
                             $feed_item = $this->getFeedItems( $data, $current_link );
                             if ( $this->storage instanceof FileStorage ) {
                                 $this->feed_items += $feed_item;
-                            }
-                            else {
+                            } else {
                                 $this->mergeFeeds( $feed_item, $this->price_items );
                                 $fi = array_shift( $feed_item );
                                 if ( $this->isValidFeedItem( $fi ) ) {

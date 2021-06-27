@@ -5,9 +5,9 @@ namespace App\Helpers;
 class FeedHelper
 {
     /**
-     * Очищает пустые элементы из массива особенностей товара
-     * @param array $short_desc Особенности товара
-     * @return array Очещенные особенности
+     * Clears empty elements from the array of product features
+     * @param array $short_desc Product Features
+     * @return array Enhanced Features
      */
     public static function normalizeShortDesc( array $short_desc ): array
     {
@@ -16,13 +16,13 @@ class FeedHelper
     }
 
     /**
-     * Получает размеры товара из строки
-     * @param string $string Строка, содержащая размеры
-     * @param string $separator Разделитель, с помощью которого строка преобразуется в массив с размерами товара
-     * @param int $x_index Индекс размера в массиве по оси X
-     * @param int $y_index Индекс размера в массиве по оси Y
-     * @param int $z_index Индекс размера в массиве по оси Z
-     * @return array Массив, содержащий размеры товара
+     * Gets the dimensions of the product from the line
+     * @param string $string A string containing the dimensions
+     * @param string $separator Separator, which is used to convert a string into an array with the dimensions of the product
+     * @param int $x_index Size index in the array on the X axis
+     * @param int $y_index Size index in the array on the Y axis
+     * @param int $z_index Size index in the array on the Z axis
+     * @return array Array containing the dimensions of the product
      */
     public static function getDimsInString( string $string, string $separator, int $x_index = 0, int $y_index = 1, int $z_index = 2 ): array
     {
@@ -36,8 +36,8 @@ class FeedHelper
     }
 
     /**
-     * Конвертирует вес из грамм в фунты
-     * @param float|null $g_value Вес в граммах
+     * Converts weight from grams to pounds
+     * @param float|null $g_value Weight in grams
      * @return float|null
      */
     public static function convertLbsFromG( ?float $g_value ): ?float
@@ -46,8 +46,8 @@ class FeedHelper
     }
 
     /**
-     * Конвертирует вес из унции в фунты
-     * @param float|null $g_value Вес в унции
+     * Converts weight from an ounce to pounds
+     * @param float|null $g_value Weight in ounces
      * @return float|null
      */
     public static function convertLbsFromOz( ?float $g_value ): ?float
@@ -56,9 +56,9 @@ class FeedHelper
     }
 
     /**
-     * Конвертирует число из произвольной единицы измерения в произвольную единицу измерения
-     * @param float|null $value Значение единицы измерения которую необходимо перевести
-     * @param float $contain_value Значение одной единицы измерения по отношению к другой
+     * Converts a number from an arbitrary unit of measurement to an arbitrary unit of measurement
+     * @param float|null $value The value of the unit of measurement to be translated
+     * @param float $contain_value The value of one unit of measurement relative to another
      * @return float|null
      */
     public static function convert( ?float $value, float $contain_value ): ?float

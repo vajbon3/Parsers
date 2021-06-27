@@ -20,7 +20,7 @@ class XLSNParser implements ParserInterface
     use ParserTrait;
 
     /**
-     * текущая строка в цикле парсинга файла таблицы
+     * the current row in the parsing cycle of the table file
      * @property Row row
      */
     protected Row $row;
@@ -117,7 +117,7 @@ class XLSNParser implements ParserInterface
     }
 
     /**
-     * если прайс лист некорректен в плане заголовков - переопределить эту функцию
+     * if the price list is incorrect in terms of titles, redefine this function
      */
     protected function isValidHeaders(): bool
     {
@@ -125,7 +125,7 @@ class XLSNParser implements ParserInterface
     }
 
     /**
-     * разбор xml/xlsx и построение по ним списка товаров(feed лист)
+     * parsing xml/xlsx and building a list of products based on them(feed list)
      *
      * @param Data $data
      * @param array $params
@@ -137,7 +137,7 @@ class XLSNParser implements ParserInterface
     }
 
     /**
-     * получить значение столбца $column в строке $this->row
+     * get the value of the $column column in the row $this->row
      * @param $column
      * @return string
      * @deprecated

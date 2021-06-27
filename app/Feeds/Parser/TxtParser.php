@@ -86,7 +86,7 @@ abstract class TxtParser implements ParserInterface
     }
 
     /**
-     * если прайс лист некорректен в плане заголовков - переопределить эту функцию
+     * if the price list is incorrect in terms of titles, redefine this function
      */
     protected function isValidHeaders(): bool
     {

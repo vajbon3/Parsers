@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Cache;
 class Proxy
 {
     /**
-     * @return string Возвращает валидный адресс прокси для использования
+     * @return string Returns a valid proxy address to use
      * @throws Exception
      */
     public static function getProxy(): string
@@ -36,8 +36,8 @@ class Proxy
     }
 
     /**
-     * Получает по API список доступных прокси и помещает их в кэш
-     * @return array Массив доступных валидных прокси
+     * Gets a list of available proxies via the API and puts them in the cache
+     * @return array An array of available valid proxies
      */
     private static function getProxyCheckerNetProxies(): array
     {

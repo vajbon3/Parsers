@@ -10,27 +10,27 @@ use GuzzleHttp\Promise\PromiseInterface;
 class HttpClient
 {
     /**
-     * @var Client Асинхронный http клиент
+     * @var Client Asynchronous http client
      */
     private Client $client;
     /**
-     * @var CookieJar Объект cookie
+     * @var CookieJar Cookie object
      */
     private CookieJar $cookie_jar;
     /**
-     * @var string Содержит доменное имя сайта, для которого будут устанавливаться пользовательские cookie
+     * @var string Contains the domain name of the site for which user cookies will be set
      */
     private string $domain;
     /**
-     * @var array Содержит массив пользовательских заголовков
+     * @var array Contains an array of custom headers
      */
     private array $headers = [];
     /**
-     * @var int Определяет время ожидания обработки запроса в секундах
+     * @var int Defines the request processing timeout in seconds
      */
     private int $timeout_s = 60;
     /**
-     * @var string|null Адрес прокси сервера
+     * @var string|null Proxy server address
      */
     private ?string $proxy = null;
 
@@ -43,7 +43,7 @@ class HttpClient
     }
 
     /**
-     * @param int $timeout Устанавливает время ожидания ответа на http запрос
+     * @param int $timeout Sets the waiting time for a response to an http request
      */
     public function setRequestTimeOut( int $timeout ): void
     {
@@ -51,7 +51,7 @@ class HttpClient
     }
 
     /**
-     * @return Client Возвращает объект класса клиента
+     * @return Client Returns an object of the client class
      */
     public function getHttpClient(): Client
     {
@@ -59,9 +59,9 @@ class HttpClient
     }
 
     /**
-     * Устанавливает заголовок http запроса
-     * @param string $name Название заголовка
-     * @param string $value Значение заголовка
+     * Sets the http request header
+     * @param string $name Title name
+     * @param string $value Header value
      */
     public function setHeader( string $name, string $value ): void
     {
@@ -69,7 +69,7 @@ class HttpClient
     }
 
     /**
-     * @param array $headers Устанавливает набор заголовков http запроса
+     * @param array $headers Sets a set of http request headers
      */
     public function setHeaders( array $headers ): void
     {
@@ -77,9 +77,9 @@ class HttpClient
     }
 
     /**
-     * Возвращает значение указанного заголовка
-     * @param string $name Название заголовка
-     * @return string|null Значение заголовка
+     * Returns the value of the specified header
+     * @param string $name Title name
+     * @return string|null Header value
      */
     public function getHeader( string $name ): ?string
     {
@@ -87,7 +87,7 @@ class HttpClient
     }
 
     /**
-     * @return array Возвращает массив заголовков
+     * @return array Returns an array of headers
      */
     public function getHeaders(): array
     {
@@ -95,9 +95,9 @@ class HttpClient
     }
 
     /**
-     * Устанавливает новую cookie
-     * @param string $name Название cookie
-     * @param string $value Значение cookie
+     * Sets a new cookie
+     * @param string $name Cookie name
+     * @param string $value Cookie value
      */
     public function setCookie( string $name, string $value ): void
     {
@@ -106,9 +106,9 @@ class HttpClient
     }
 
     /**
-     * Возвращает значение указанной cookie
-     * @param string $name Название cookie
-     * @return string Значение cookie
+     * Returns the value of the specified cookie
+     * @param string $name Cookie name
+     * @return string cookie value
      */
     public function getCookie( string $name ): string
     {
@@ -120,7 +120,7 @@ class HttpClient
     }
 
     /**
-     * Удаляет все куки
+     * Deletes all cookies
      */
     public function clearCookie(): void
     {
@@ -128,7 +128,7 @@ class HttpClient
     }
 
     /**
-     * @param string|null $proxy Устанавливает адрес прокси сервера
+     * @param string|null $proxy Sets the proxy server address
      */
     public function setProxy( ?string $proxy ): void
     {
@@ -136,11 +136,11 @@ class HttpClient
     }
 
     /**
-     * Отправляет http запрос
-     * @param string $link Ссылка по которой будет отправлен запрос
-     * @param array $params Параметры запроса
-     * @param string $method Метод запроса
-     * @param string $type_params Тип отправки параметров
+     * Sends an http request
+     * @param string $link The link where the request will be sent
+     * @param array $params Request parameters
+     * @param string $method Request method
+     * @param string $type_params Type of sending parameters
      */
     public function request( string $link, array $params = [], string $method = 'GET', string $type_params = '' ): PromiseInterface
     {
@@ -163,7 +163,7 @@ class HttpClient
     }
 
     /**
-     * @param string $source Устанавливает домен для которого будут создаваться пользовательские cookie
+     * @param string $source Sets the domain for which user cookies will be created
      */
     private function setDomain( string $source ): void
     {

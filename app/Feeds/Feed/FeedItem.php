@@ -14,141 +14,141 @@ use Throwable;
 class FeedItem
 {
     /**
-     * @var string Уникальный код товара
+     * @var string Unique product code
      */
     public string $productcode = '';
     /**
-     * @var string|null Идентификатор товара в Amazon
+     * @var string|null Product ID in Amazon
      */
     public ?string $ASIN = null;
     /**
-     * @var string Название товара
+     * @var string Product name
      */
     public string $product = '';
     /**
-     * @var float|null Цена товара с учетом скидки
+     * @var float|null Product price including discount
      */
     public ?float $cost_to_us = null;
     /**
-     * @var float|null Оригинальная цена товара
+     * @var float|null Original product price
      */
     public ?float $list_price = null;
     /**
-     * @var string|null Ключевые особенности товара, известные как "features" или "bullets"
+     * @var string|null Key product features known as "features" or "bullets"
      */
     public ?string $descr = null;
     /**
-     * @var string|null Описание товара
+     * @var string|null Product Description
      */
     public ?string $fulldescr = null;
     /**
-     * @var string|null Бренд товара
+     * @var string|null Product brand
      */
     public ?string $brand_name = null;
     /**
-     * @var bool Присутствует ли бренд товара в названии товара
+     * @var bool Is the product brand present in the product name
      */
     public bool $brand_normalized = false;
     /**
-     * @var string Можно ли продавать товар "Y/N"
+     * @var string Is it possible to sell the product "Y/N"
      */
     public string $forsale = 'Y';
     /**
-     * @var string|null Дата поступления товара на склад
+     * @var string|null Date of receipt of the goods in the warehouse
      */
     public ?string $eta_date_mm_dd_yyyy = null;
     /**
-     * @var string|null Штрихкод товара
+     * @var string|null Product barcode
      */
     public ?string $upc = null;
-    // категория
+    // category
     public array $supplier_categories = [];
     /**
-     * @var string|null Ссылка на страницу товара
+     * @var string|null Link to the product page
      */
     public ?string $supplier_internal_id = null;
     /**
-     * @var string Хэш сумма товара
+     * @var string Hash of the product amount
      */
     public string $hash_product = '';
     /**
-     * @var array Ссылки на изображения товара
+     * @var array Links to product images
      */
     public array $images = [];
     /**
-     * @var array Альтернативные названия изображений товара для атрибута "alt"
+     * @var array Alternative product image names for the "alt" attribute
      */
     public array $alt_names = [];
     /**
-     * @var float|null x,y,z размеры товара
+     * @var float|null x,y, z product dimensions
      */
     public ?float $dim_x = null;
     public ?float $dim_y = null;
     public ?float $dim_z = null;
     /**
-     * @var float|null Вес товара для доставки (брутто)
+     * @var float|null Product weight for delivery (gross)
      */
     public ?float $shipping_weight = null;
     /**
-     * @var float|null Размеры товара для доставки
+     * @var float|null Dimensions of the product for delivery
      */
     public ?float $shipping_dim_x = null;
     public ?float $shipping_dim_y = null;
     public ?float $shipping_dim_z = null;
     /**
-     * @var float|null Вес товара (нетто)
+     * @var float|null Product weight (net)
      */
     public ?float $weight = null;
     /**
-     * @var int Минимальное количество покупки товара
+     * @var int Minimum quantity of product purchase
      */
     public int $min_amount = 1;
     /**
-     * @var string|null Продавать товар упаковкой или поштучно "Y/N"
+     * @var string|null Sell the product in a package or piece by piece "Y/N"
      */
     public ?string $mult_order_quantity = null;
     /**
-     * @var bool Является ли товар групповым
+     * @var bool Is the product a group product
      */
     public bool $is_group = false;
     /**
-     * @var FeedItem[] Дочерние товары
+     * @var FeedItem[] Child products
      */
     public array $child_products = [];
     /**
-     * @var string|null Общая часть названия для групповых товаров
+     * @var string|null Common part of the name for group products
      */
     public ?string $group_mask = null;
     /**
-     * @var float|null Минимальная цена продажи товара
+     * @var float|null Minimum sale price of the product
      */
     public ?float $new_map_price = null;
     /**
-     * @var int|null Количество единиц на складе
+     * @var int|null Number of units in stock
      */
     public ?int $r_avail = null;
     /**
-     * @var string|null Уникальный идентификатор товара "sku"
+     * @var string|null Unique product ID " sku "
      */
     public ?string $mpn = null;
     /**
-     * @var string|null Сообщение о требуемом времени для обработки заказа
+     * @var string|null Message about the required time for order processing
      */
     public ?string $lead_time_message = null;
     /**
-     * @var array|null Характеристики товара
+     * @var array|null Product Characteristics
      */
     public ?array $attributes = null;
     /**
-     * @var array Файлы к товару: инструкции и пр.
+     * @var array Files for the product: instructions, etc.
      */
     public array $product_files = [];
     /**
-     * @var array Опции товара: размер, цвет и пр.
+     * @var array Product options: size, color, etc.
      */
     public array $options = [];
     /**
-     * @var array Видео товара
+     * @var array Product Video
      */
     public array $videos = [];
 
@@ -220,8 +220,7 @@ class FeedItem
                         } ) ?? [];
 
                     $this->setChildProducts( array_values( $children ) );
-                }
-                else {
+                } else {
                     $this->setIsGroup( false );
                     $this->setRAvail( $parser->getAvail() );
                     $this->setForsale( $parser->getForsale() );
@@ -260,7 +259,7 @@ class FeedItem
     }
 
     /**
-     * @param string $productcode Устанавливает код товара
+     * @param string $productcode Sets the product code
      */
     public function setProductCode( string $productcode ): void
     {
@@ -268,7 +267,7 @@ class FeedItem
     }
 
     /**
-     * @return string Возвращает код товара
+     * @return string Returns the product code
      */
     public function getProductcode(): string
     {
@@ -276,7 +275,7 @@ class FeedItem
     }
 
     /**
-     * @param string|null $ASIN Устанавливает идентификатор товара в Amazon
+     * @param string|null $ASIN Sets the product ID in Amazon
      */
     public function setASIN( string $ASIN = null ): void
     {
@@ -284,7 +283,7 @@ class FeedItem
     }
 
     /**
-     * @return string|null Возвращает идентификатор товара в Amazon
+     * @return string|null Returns the product ID in Amazon
      */
     public function getASIN(): ?string
     {
@@ -292,7 +291,7 @@ class FeedItem
     }
 
     /**
-     * @param string $product Устанавливает название товара
+     * @param string $product Sets the product name
      */
     public function setProduct( string $product ): void
     {
@@ -300,7 +299,7 @@ class FeedItem
     }
 
     /**
-     * @return string Возвращает название товара
+     * @return string Returns the product name
      */
     public function getProduct(): string
     {
@@ -308,7 +307,7 @@ class FeedItem
     }
 
     /**
-     * @param float $cost_to_us Устанавливает стоимость товара со скидкой
+     * @param float $cost_to_us Sets the price of the product with a discount
      */
     public function setCostToUs( float $cost_to_us ): void
     {
@@ -316,7 +315,7 @@ class FeedItem
     }
 
     /**
-     * @return float Возвращает стоимость товара со скидкой
+     * @return float Returns the cost of the product with a discount
      */
     public function getCostToUs(): float
     {
@@ -324,7 +323,7 @@ class FeedItem
     }
 
     /**
-     * @param null|float $list_price Устанавливает оригинальную стоимость товара
+     * @param null|float $list_price Sets the original price of the product
      */
     public function setListPrice( ?float $list_price ): void
     {
@@ -335,7 +334,7 @@ class FeedItem
     }
 
     /**
-     * @return null|float Возвращает оригинальную стоимость товара
+     * @return null|float Returns the original price of the product
      */
     public function getListPrice(): ?float
     {
@@ -343,7 +342,7 @@ class FeedItem
     }
 
     /**
-     * @param array $descr Устанавливает ключевые особенности товара
+     * @param array $descr Sets the key features of the product
      */
     public function setShortdescr( array $descr = [] ): void
     {
@@ -354,7 +353,7 @@ class FeedItem
     }
 
     /**
-     * @return null|string Возвращает ключевые особенности товара
+     * @return null|string Returns the key features of the product
      */
     public function getShortdescr(): ?string
     {
@@ -362,7 +361,7 @@ class FeedItem
     }
 
     /**
-     * @param string $fulldescr Устанавливает описание товара
+     * @param string $fulldescr Sets the product description
      */
     public function setFulldescr( string $fulldescr ): void
     {
@@ -370,7 +369,7 @@ class FeedItem
     }
 
     /**
-     * @return string Возвращает описание товара
+     * @return string Returns the product description
      */
     public function getFulldescr(): string
     {
@@ -378,7 +377,7 @@ class FeedItem
     }
 
     /**
-     * @param string|null $brand_name Устанавливает бренд товара
+     * @param string|null $brand_name Sets the product brand
      */
     public function setBrandName( ?string $brand_name ): void
     {
@@ -386,7 +385,7 @@ class FeedItem
     }
 
     /**
-     * @return string|null Возвращает бренд товара
+     * @return string|null Returns the product brand
      */
     public function getBrandName(): ?string
     {
@@ -410,7 +409,7 @@ class FeedItem
     }
 
     /**
-     * @param string $forsale Устанавливает можно ли продавать товар
+     * @param string $forsale Sets whether the product can be sold
      */
     public function setForsale( string $forsale ): void
     {
@@ -418,7 +417,7 @@ class FeedItem
     }
 
     /**
-     * @return string Возвращает можно ли продавать товар
+     * @return string Returns whether the product can be sold
      */
     public function getForsale(): string
     {
@@ -426,7 +425,7 @@ class FeedItem
     }
 
     /**
-     * @param DateTime|null $eta Устанавливает дату поступления товара на склад
+     * @param DateTime|null $eta Sets the date of receipt of the goods in the warehouse
      */
     public function setEtaDateMmDdYyyy( DateTime $eta = null ): void
     {
@@ -436,7 +435,7 @@ class FeedItem
     }
 
     /**
-     * @return DateTime|null Возвращает дату поступления товара на склад
+     * @return DateTime|null Returns the date of receipt of the goods in the warehouse
      */
     public function getEtaDateMmDdYyyy(): ?DateTime
     {
@@ -448,7 +447,7 @@ class FeedItem
     }
 
     /**
-     * @param string|null $upc Устанавливает штрихкод товара
+     * @param string|null $upc Sets the barcode of the product
      */
     public function setUpc( ?string $upc ): void
     {
@@ -458,7 +457,7 @@ class FeedItem
     }
 
     /**
-     * @return string|null Возвращает штрихкод товара
+     * @return string|null Returns the barcode of the product
      */
     public function getUpc(): ?string
     {
@@ -466,7 +465,7 @@ class FeedItem
     }
 
     /**
-     * @param string $supplier_internal_id Устанавливает ссылку на страницу товара
+     * @param string $supplier_internal_id Sets the link to the product page
      */
     public function setSupplierInternalId( string $supplier_internal_id ): void
     {
@@ -474,7 +473,7 @@ class FeedItem
     }
 
     /**
-     * @return string Возвращает ссылку на страницу товара
+     * @return string Returns a link to the product page
      */
     public function getSupplierInternalId(): string
     {
@@ -482,7 +481,7 @@ class FeedItem
     }
 
     /**
-     * @param array $images Устанавливает ссылки на изображения товара
+     * @param array $images Sets links to product images
      */
     public function setImages( array $images ): void
     {
@@ -490,7 +489,7 @@ class FeedItem
     }
 
     /**
-     * @return array Возвращает ссылки на изображения товара
+     * @return array Returns links to product images
      */
     public function getImages(): array
     {
@@ -498,7 +497,7 @@ class FeedItem
     }
 
     /**
-     * @param array $alt_names Устанавливает альтернативные названия изображений
+     * @param array $alt_names Sets alternative image names
      */
     public function setAltNames( array $alt_names ): void
     {
@@ -506,7 +505,7 @@ class FeedItem
     }
 
     /**
-     * @param array Возвращает альтернативные названия изображений
+     * @param array Returns alternative image names
      */
     public function getAltNames(): array
     {
@@ -514,7 +513,7 @@ class FeedItem
     }
 
     /**
-     * @param float|null $dim_x Устанавливает размер товара по "X"
+     * @param float|null $dim_x Sets the product size by " X "
      */
     public function setDimX( float $dim_x = null ): void
     {
@@ -522,7 +521,7 @@ class FeedItem
     }
 
     /**
-     * @param float|null Возвращает размер товара по "X"
+     * @param float|null Returns the size of the product by " X "
      */
     public function getDimX(): ?float
     {
@@ -530,7 +529,7 @@ class FeedItem
     }
 
     /**
-     * @param float|null $dim_y Устанавливает размер товара по "Y"
+     * @param float|null $dim_y Sets the product size by " Y "
      */
     public function setDimY( float $dim_y = null ): void
     {
@@ -538,7 +537,7 @@ class FeedItem
     }
 
     /**
-     * @param float|null Возвращает размер товара по "Y"
+     * @param float|null Returns the size of the product by "Y"
      */
     public function getDimY(): ?float
     {
@@ -546,7 +545,7 @@ class FeedItem
     }
 
     /**
-     * @param float|null $dim_z Устанавливает размер товара по "Z"
+     * @param float|null $dim_z Sets the product size by " Z "
      */
     public function setDimZ( float $dim_z = null ): void
     {
@@ -554,7 +553,7 @@ class FeedItem
     }
 
     /**
-     * @param float|null Возвращает размер товара по "Z"
+     * @param float|null Returns the size of the product by " Z "
      */
     public function getDimZ(): ?float
     {
@@ -562,7 +561,7 @@ class FeedItem
     }
 
     /**
-     * @param float|null $weight Устанавливает вес товара для доставки
+     * @param float|null $weight Sets the weight of the product for delivery
      */
     public function setShippingWeight( float $weight = null ): void
     {
@@ -570,7 +569,7 @@ class FeedItem
     }
 
     /**
-     * @return float|null Возвращает вес товара для доставки
+     * @return float|null Returns the weight of the item for delivery
      */
     public function getShippingWeight(): ?float
     {
@@ -578,7 +577,7 @@ class FeedItem
     }
 
     /**
-     * @param float|null $dim_x Устанавливает размер товара для доставки по "X"
+     * @param float|null $dim_x Sets the size of the product for delivery by " X "
      */
     public function setShippingDimX( float $dim_x = null ): void
     {
@@ -586,7 +585,7 @@ class FeedItem
     }
 
     /**
-     * @param float|null Возвращает размер товара по "X"
+     * @param float|null Returns the size of the product by " X "
      */
     public function getShippingDimX(): ?float
     {
@@ -594,7 +593,7 @@ class FeedItem
     }
 
     /**
-     * @param float|null $dim_y Устанавливает размер товара для доставки по "Y"
+     * @param float|null $dim_y Sets the size of the product for delivery by "Y"
      */
     public function setShippingDimY( float $dim_y = null ): void
     {
@@ -602,7 +601,7 @@ class FeedItem
     }
 
     /**
-     * @param float|null Возвращает размер товара по "Y"
+     * @param float|null Returns the size of the product by "Y"
      */
     public function getShippingDimY(): ?float
     {
@@ -610,7 +609,7 @@ class FeedItem
     }
 
     /**
-     * @param float|null $dim_z Устанавливает размер товара для доставки по "Z"
+     * @param float|null $dim_z Sets the size of the product for delivery by " Z "
      */
     public function setShippingDimZ( float $dim_z = null ): void
     {
@@ -618,7 +617,7 @@ class FeedItem
     }
 
     /**
-     * @param float|null Возвращает размер товара по "Z"
+     * @param float|null Returns the size of the product by " Z"
      */
     public function getShippingDimZ(): ?float
     {
@@ -626,7 +625,7 @@ class FeedItem
     }
 
     /**
-     * @param float|null $weight Устанавливает вес товара
+     * @param float|null $weight Sets the weight of the product
      */
     public function setWeight( float $weight = null ): void
     {
@@ -634,7 +633,7 @@ class FeedItem
     }
 
     /**
-     * @return float|null Возвращает вес товара
+     * @return float|null Returns the weight of the product
      */
     public function getWeight(): ?float
     {
@@ -642,7 +641,7 @@ class FeedItem
     }
 
     /**
-     * @param int $min_amount Устанавливает минимальное количество покупки товара
+     * @param int $min_amount Sets the minimum purchase quantity of the product
      */
     public function setMinAmount( int $min_amount ): void
     {
@@ -650,7 +649,7 @@ class FeedItem
     }
 
     /**
-     * @return int Возвращает минимальное количество покупки товара
+     * @return int Returns the minimum purchase quantity of the product
      */
     public function getMinAmount(): int
     {
@@ -658,7 +657,7 @@ class FeedItem
     }
 
     /**
-     * @param string $mult_order_quantity Устанавливает продавать товар упаковкой или поштучно
+     * @param string $mult_order_quantity Sets to sell the product by package or piece by piece
      */
     public function setMultOrderQuantity( string $mult_order_quantity ): void
     {
@@ -666,7 +665,7 @@ class FeedItem
     }
 
     /**
-     * @return string|null Возвращает продавать товар упаковкой или поштучно
+     * @return string|null Returns to sell the product by package or piece by piece
      */
     public function getMultOrderQuantity(): ?string
     {
@@ -674,7 +673,7 @@ class FeedItem
     }
 
     /**
-     * @param bool $is_group Устанавливает является ли товар групповым
+     * @param bool $is_group Sets whether the product is a group product
      */
     public function setIsGroup( bool $is_group ): void
     {
@@ -682,7 +681,7 @@ class FeedItem
     }
 
     /**
-     * @return bool Возвращает является ли товар групповым
+     * @return bool Returns whether the product is a group product
      */
     public function isGroup(): bool
     {
@@ -690,7 +689,7 @@ class FeedItem
     }
 
     /**
-     * @param array $child_products Устанавливает дочерние товары
+     * @param array $child_products Sets child products
      */
     public function setChildProducts( array $child_products ): void
     {
@@ -698,7 +697,7 @@ class FeedItem
     }
 
     /**
-     * @return array Возвращает дочерние товары
+     * @return array Returns child products
      */
     public function getChildProducts(): array
     {
@@ -706,7 +705,7 @@ class FeedItem
     }
 
     /**
-     * @param string|null $group_mask Устанавливает общую часть названия для групповых товаров
+     * @param string|null $group_mask Sets the common part of the name for group products
      */
     public function setGroupMask( ?string $group_mask ): void
     {
@@ -714,7 +713,7 @@ class FeedItem
     }
 
     /**
-     * @return string|null Возвращает общую часть названия для групповых товаров
+     * @return string|null Returns the common part of the name for group products
      */
     public function getGroupMask(): ?string
     {
@@ -722,7 +721,7 @@ class FeedItem
     }
 
     /**
-     * @param float|null $new_map_price Устанавливает минимальную цену продажи товара
+     * @param float|null $new_map_price Sets the minimum selling price of the product
      */
     public function setNewMapPrice( float $new_map_price = null ): void
     {
@@ -730,7 +729,7 @@ class FeedItem
     }
 
     /**
-     * @return float|null Возвращает минимальную цену продажи товара
+     * @return float|null Returns the minimum selling price of the product
      */
     public function getNewMapPrice(): ?float
     {
@@ -738,7 +737,7 @@ class FeedItem
     }
 
     /**
-     * @param int|null $r_avail Устанавливает количество единиц на складе
+     * @param int|null $r_avail Sets the number of units in stock
      */
     public function setRAvail( ?int $r_avail = null ): void
     {
@@ -746,7 +745,7 @@ class FeedItem
     }
 
     /**
-     * @return int|null Возвращает количество единиц на складе
+     * @return int|null Returns the number of units in stock
      */
     public function getRAvail(): ?int
     {
@@ -754,7 +753,7 @@ class FeedItem
     }
 
     /**
-     * @param string $mpn Устанавливает уникальный идентификатор товара
+     * @param string $mpn Sets the unique identifier of the product
      */
     public function setMpn( string $mpn ): void
     {
@@ -762,7 +761,7 @@ class FeedItem
     }
 
     /**
-     * @return string Возвращает уникальный идентификатор товара
+     * @return string Returns a unique product ID
      */
     public function getMpn(): string
     {
@@ -770,7 +769,7 @@ class FeedItem
     }
 
     /**
-     * @param string|null $lead_time_message Устанавливает сообщение о требуемом времени для обработки заказа
+     * @param string|null $lead_time_message Sets a message about the required time for order processing
      */
     public function setLeadTimeMessage( ?string $lead_time_message ): void
     {
@@ -778,7 +777,7 @@ class FeedItem
     }
 
     /**
-     * @return string|null Возвращает сообщение о требуемом времени для обработки заказа
+     * @return string|null Returns a message about the required time to process the order
      */
     public function getLeadTimeMessage(): ?string
     {
@@ -786,7 +785,7 @@ class FeedItem
     }
 
     /**
-     * @param array|null $getAttributes Устанавливает характеристики товара
+     * @param array|null $getAttributes Sets the product characteristics
      */
     public function setAttributes( ?array $getAttributes ): void
     {
@@ -794,7 +793,7 @@ class FeedItem
     }
 
     /**
-     * @param array|null Возвращает характеристики товара
+     * @param array|null Returns the product characteristics
      */
     public function getAttributes(): ?array
     {
@@ -802,7 +801,7 @@ class FeedItem
     }
 
     /**
-     * @param array $product_files Устанавливает файлы к товару
+     * @param array $product_files Sets the files for the product
      */
     public function setProductFiles( array $product_files ): void
     {
@@ -810,7 +809,7 @@ class FeedItem
     }
 
     /**
-     * @return array Возвращает файлы к товару
+     * @return array Returns files to the product
      */
     public function getProductFiles(): array
     {
@@ -818,7 +817,7 @@ class FeedItem
     }
 
     /**
-     * @param array $options Устанавливает опции товара
+     * @param array $options Sets the product options
      */
     public function setOptions( array $options ): void
     {
@@ -826,7 +825,7 @@ class FeedItem
     }
 
     /**
-     * @return array Возвращает опции товара
+     * @return array Returns product options
      */
     public function getOptions(): array
     {
@@ -834,7 +833,7 @@ class FeedItem
     }
 
     /**
-     * @param array $videos Устанавливает видео товара
+     * @param array $videos Sets the video of the product
      */
     public function setVideos( array $videos ): void
     {
@@ -842,7 +841,7 @@ class FeedItem
     }
 
     /**
-     * @return array Возвращает видео товара
+     * @return array Returns a video of the product
      */
     public function getVideos(): array
     {
@@ -850,7 +849,7 @@ class FeedItem
     }
 
     /**
-     * Устанавливает хэш сумму товара
+     * Sets the hash amount of the product
      * @throws Exception
      */
     public function setHashProduct(): void
@@ -861,7 +860,7 @@ class FeedItem
     }
 
     /**
-     * @return string Возвращает хэш сумму товара
+     * @return string Returns the hash amount of the product
      */
     public function getHashProduct(): string
     {
@@ -869,7 +868,7 @@ class FeedItem
     }
 
     /**
-     * Вырезает тэги из описания, оставляя разрешенные теги, очищаяя их от стилей и т.п.
+     * Cuts tags from the description, leaving the allowed tags, clearing them of styles, etc.
      *
      * @param $fulldescr
      * @param bool $flag
@@ -918,8 +917,7 @@ class FeedItem
                 $regexp = '/<(\D+)\s?[^>]*?>/';
                 if ( preg_match( $regexp, $tag, $matches ) ) {
                     $mass[] = $matches[ 1 ];
-                }
-                else {
+                } else {
                     $mass[] = $tag;
                 }
             }
@@ -944,20 +942,20 @@ class FeedItem
     }
 
     /**
-     * Преобразует свойства объекта в массив
+     * Converts object properties to an array
      *
-     * @param array $attrs
+     * @param array $attr
      * @return array
      */
-    public function propsToArray( $attrs = [] ): array
+    public function propsToArray( $attr = [] ): array
     {
         $result = get_object_vars( $this );
 
-        return !$attrs ? $result : array_intersect_key( $result, array_flip( $attrs ) );
+        return !$attr ? $result : array_intersect_key( $result, array_flip( $attr ) );
     }
 
     /**
-     * @return string Преобразует свойства объекта в json строку
+     * @return string Converts object properties to a json string
      * @throws Exception
      */
     public function propsToJson(): string

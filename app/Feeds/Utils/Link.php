@@ -5,27 +5,27 @@ namespace App\Feeds\Utils;
 class Link
 {
     /**
-     * @var string Адрес ссылки на который будет отправлен запрос
+     * @var string The URL of the link to which the request will be sent
      */
     private string $url;
     /**
-     * @var string Метод отправки запроса
+     * @var string Method for sending the request
      */
     private string $method;
     /**
-     * @var array Параметры запроса
+     * @var array Request parameters
      */
     private array $params;
     /**
-     * @var string Тип отправки параметров запроса
-     * Для GET запроса - это query_string
-     * Для POST запроса - это form_data или request_payload (тело RESTAPI запроса)
-     * При значении "default" параметры POST запроса будут отправлены как form_data
-     * Параметры GET запроса при любом значении будут отправлены как query_string
+     * @var string Type of sending request parameters
+     * For a GET request, this is a query_string
+     * For a POST request, this is form_data or request_payload (the RESTAPI request body)
+     * If the value is "default", the POST request parameters will be sent as form_data
+     * GET request parameters with any value will be sent as query_string
      */
     private string $type_params;
     /**
-     * @var bool Статус посещения ссылки. False если ссылка не была посещена загрузчиком
+     * @var bool Link visit status. False if the link was not visited by the loader
      */
     private bool $visited = false;
 
@@ -48,7 +48,7 @@ class Link
     }
 
     /**
-     * Устанавливает новый url адрес
+     * Sets a new url
      * @param string $url
      * @return Link
      */
@@ -59,7 +59,7 @@ class Link
     }
 
     /**
-     * Возвращает текущий url адрес
+     * Returns the current url
      * @return string
      */
     public function getUrl(): string
@@ -76,7 +76,7 @@ class Link
         return $url;
     }
 
-    /** Устанавливает новый метод отправки запроса
+    /** Sets a new method for sending the request
      * @param string $method
      * @return Link
      */
@@ -90,7 +90,7 @@ class Link
     }
 
     /**
-     * @return string Возвращает текущий метод отправки запроса
+     * @return string Returns the current method of sending the request
      */
     public function getMethod(): string
     {
@@ -98,7 +98,7 @@ class Link
     }
 
     /**
-     * Устанавливает новый набор параметров
+     * Sets a new set of parameters
      * @param array $params
      * @return Link
      */
@@ -109,7 +109,7 @@ class Link
     }
 
     /**
-     * @return array Возвращает набор параметров
+     * @return array Returns a set of parameters
      */
     public function getParams(): array
     {
@@ -120,7 +120,7 @@ class Link
     }
 
     /**
-     * @param string $type Устанавливает новый тип отправки параметров запроса
+     * @param string $type Sets a new type for sending request parameters
      * @return $this
      */
     public function setTypeParams( string $type ): self
@@ -130,7 +130,7 @@ class Link
     }
 
     /**
-     * @return string Возвращает текущий тип отправки параметров запроса
+     * @return string Returns the current type of sending request parameters
      */
     public function getTypeParams(): string
     {
@@ -138,7 +138,7 @@ class Link
     }
 
     /**
-     * @return bool Возвращает статус посещения ссылки
+     * @return bool Returns the status of the link visit
      */
     public function isVisited(): bool
     {
@@ -146,7 +146,7 @@ class Link
     }
 
     /**
-     * @param bool $visited Устанавливает статус посещения ссылки
+     * @param bool $visited Sets the status of the link visit
      * @return Link
      */
     public function setVisited( bool $visited = true ): self

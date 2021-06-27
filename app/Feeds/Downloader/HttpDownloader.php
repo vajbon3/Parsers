@@ -17,35 +17,35 @@ use JetBrains\PhpStorm\Pure;
 class HttpDownloader
 {
     /**
-     * @var HttpClient Ассинхронный HTTP клиент
+     * @var HttpClient Async HTTP client
      */
     private HttpClient $client;
     /**
-     * @var bool Использовать статичный user agent или изменять его при каждом запросе
+     * @var bool Defines how to use the user agent, change it on each request, or use a static value
      */
     private bool $static_user_agent;
     /**
-     * @var string Текущий user agent
+     * @var string Current user agent
      */
     private string $user_agent;
     /**
-     * @var float Время ожидания между отправкой запроса
+     * @var float Waiting time between sending a request
      */
     private float $delay_s;
     /**
-     * @var array Параметры для авторизации
+     * @var array Parameters for authorization
      *
-     * 'check_login_text' => 'Log Out' - Проверочное слово, которое отображается только авторизованным пользователям (Log Out, My account и прочие)
-     * 'auth_url' => 'https://www.authorise_uri.com/login' - Url адрес на который отправляется запрос для авторизации
-     * 'auth_form_url' => 'https://www.authorise_uri.com/login' - Url адрес страницы, на которой находится форма авторизации
-     * 'auth_info' => [] - Массив параметров для авторизации, содержит в себе все поля, которые были отправлены браузером для авторизации
-     * 'find_fields_form' => true|false - Определяет искать дополнительные поля формы авторизации перед отправкой запроса или нет
-     * Если этот параметр будет опущен, система сочтет его значение как "true"
-     * 'api_auth' => true|false - Указывает в каком виде отправлять параметры формы авторизации ("request_payload" или "form_data")
-     * Если этот параметр будет опущен, система сочтет его значение как "false".
-     * По умолчанию параметры отправляются, как обычные поля формы
+     * 'check_login_text' => 'Log Out' - A verification word that is displayed only to authorized users (Log Out, My account ...)
+     * 'auth_url' => 'https://www.authorise_uri.com/login' - The URL to which the authorization request is sent
+     * 'auth_form_url' => 'https://www.authorise_uri.com/login' - The URL of the page where the authorization form is located
+     * 'auth_info' => [] - An array of parameters for authorization, contains all the fields that were sent by the browser for authorization
+     * 'find_fields_form' => true|false - Determines whether to search for additional fields of the authorization form before sending the request or not
+     * If this parameter is omitted, the system will consider its value as "true"
+     * 'api_auth' => true|false - Specifies in what form to send the parameters of the authorization form ("request_payload" or "form_data")
+     * If this parameter is omitted, the system will consider its value as "false".
+     * By default, the parameters are sent as normal form fields
      *
-     * Пример содержания auth_info:
+     * Example of the content auth_info:
      * 'auth_info' => [
      *     'login[username]' => 'user@my-email.com',
      *     'login[password]' => 'My-Password',
@@ -53,15 +53,15 @@ class HttpDownloader
      */
     private array $params;
     /**
-     * @var bool Определяет использовать прокси или нет
+     * @var bool Determines whether to use a proxy or not
      */
     private bool $use_proxy;
     /**
-     * @var bool Определяет установлено соединение с прокси сервером или нет
+     * @var bool Determines whether the connection to the proxy server is established or not
      */
     private bool $connect = false;
     /**
-     * @var int Определяет время ожидания обработки запроса в секундах
+     * @var int Defines the waiting time for processing the request in seconds
      */
     public int $timeout_s;
 
@@ -84,7 +84,7 @@ class HttpDownloader
     }
 
     /**
-     * @param bool $static_agent Устанавливает использовать статичный user-agent или нет
+     * @param bool $static_agent Sets whether to use a static user-agent or not
      */
     public function setStaticUserAgent( bool $static_agent ): void
     {
@@ -92,7 +92,7 @@ class HttpDownloader
     }
 
     /**
-     * @param string $user_agent Устанавливает значение user-agent
+     * @param string $user_agent Sets the user-agent value
      */
     public function setUserAgent( string $user_agent ): void
     {
@@ -100,7 +100,7 @@ class HttpDownloader
     }
 
     /**
-     * @param float $timeout Устанавливает время ожидания отклика на запрос
+     * @param float $timeout Sets the waiting time for a response to a request
      */
     public function setTimeOut( float $timeout ): void
     {
@@ -108,7 +108,7 @@ class HttpDownloader
     }
 
     /**
-     * @param float $delay Устанавливает задержку между запросами
+     * @param float $delay Sets the delay between requests
      */
     public function setDelay( float $delay ): void
     {
@@ -116,7 +116,7 @@ class HttpDownloader
     }
 
     /**
-     * @param bool $use_proxy Устанавливает использовать прокси или нет
+     * @param bool $use_proxy Sets whether to use a proxy or not
      */
     public function setUseProxy( bool $use_proxy ): void
     {
@@ -124,7 +124,7 @@ class HttpDownloader
     }
 
     /**
-     * @param array $params Устанавливает параметры авторизации
+     * @param array $params Sets the authorization parameters
      */
     public function setParams( array $params ): void
     {
@@ -132,17 +132,17 @@ class HttpDownloader
     }
 
     /**
-     * Асинхронная отправка нескольких запросов
-     * @param array $links Принимается массив ссылок или массив объектов app/Feeds/Utils/Link
-     * @param bool $assoc Указывает в каком виде возвращать массив ответов на запросы
-     * Обычный массив, где ключ - это адрес ссылки, на которую был отправлен запрос, а значение - это содержание ответа на запрос
-     * Ассоциативный массив, вида:
-     * 'data' => new Data() - Содержание ответа на запрос
+     * Sending multiple requests async
+     * @param array $links An array of references or an array of objects app/Feeds/Utils/Link
+     * @param bool $assoc Specifies in what form to return an array of responses to requests
+     * A normal array, where the key is the address of the link to which the request was sent, and the value is the content of the response to the request
+     * An associative array, of the form:
+     * 'data' => new Data() - The content of the response to the request
      * 'link' => [
-     * 'url' => $link->getUrl() - Адрес ссылки, на которую был отправлен запрос
-     * 'params' => $link->getParams() - Массив параметров запроса
+     * 'url' => $link->getUrl() - The address of the link to which the request was sent
+     * 'params' => $link->getParams() - Array of request parameters
      * ]
-     * @return array Массив ответов на запросы, каждый ответ помещен в объект app/Feeds/Utils/Data
+     * @return array An array of responses to requests, each response is placed in an object app/Feeds/Utils/Data
      */
     public function fetch( array $links, bool $assoc = false ): array
     {
@@ -188,7 +188,7 @@ class HttpDownloader
                                 elseif ( $status >= 500 ) {
                                     $errors_links[] = $this->prepareErrorLinks( $link, 0 );
                                 }
-                                elseif ( in_array( $status, [ 200, 404 ] ) ) {
+                                elseif ( in_array( $status, [ 200, 404 ], true ) ) {
                                     $data = $this->prepareRequestData( new Data( $response->getBody()->getContents() ), $link, $assoc, $data );
                                 }
                                 else {
@@ -221,10 +221,10 @@ class HttpDownloader
     }
 
     /**
-     * Попытка загрузить ссылки, при загрузке которых произошли 403 или 503 ошибки
-     * @param array $errors_links Массив вида ['link' => Link, 'delay' => delay_s]
-     * @param bool $assoc В каком виде возвращать массив ответов на запросы
-     * @return array Массив ответов на запросы
+     * Attempt to load links with 403 or 500 errors when loading them
+     * @param array $errors_links Array of the form ['link' => Link, 'delay' => delay_s]
+     * @param bool $assoc In what form should I return an array of responses to requests
+     * @return array Array of responses to requests
      */
     private function processErrorLinks( array $errors_links, bool $assoc ): array
     {
@@ -284,10 +284,10 @@ class HttpDownloader
     }
 
     /**
-     * Посылает одиночный запрос методом GET
-     * @param string|Link $link Принимается ссылка или объект app/Feeds/Utils/Link
-     * @param array $params Массив параметров, которые будут преобразованы в query string
-     * @return Data Объект app/Feeds/Utils/Data который содержит ответ на запрос
+     * Sends a single request using the GET method
+     * @param string|Link $link A link or an app/Feeds/Utils/Link object is accepted
+     * @param array $params Array of parameters to be converted to a query string
+     * @return Data Object app/Feeds/Utils/Data which contains the response to the request
      */
     public function get( string|Link $link, array $params = [] ): Data
     {
@@ -299,11 +299,11 @@ class HttpDownloader
     }
 
     /**
-     * Посылает одиночный запрос методом POST
-     * @param string|Link $link Принимается ссылка или объект app/Feeds/Utils/Link
-     * @param array $params Массив параметров
-     * @param string $type_params Тип отправки параметров запроса - как тело html формы или как json строка (тело API запроса)
-     * @return Data Объект app/Feeds/Utils/Data который содержит ответ на запрос
+     * Sends a single request using the POST method
+     * @param string|Link $link A link or an app/Feeds/Utils/Link object is accepted
+     * @param array $params Array of parameters
+     * @param string $type_params The type of sending request parameters - as the body of the html form or as a json string (the body of the API request)
+     * @return Data The app/Feeds/Utils/Data object that contains the response to the request
      */
     public function post( string|Link $link, array $params = [], string $type_params = 'form_data' ): Data
     {
@@ -316,7 +316,7 @@ class HttpDownloader
     }
 
     /**
-     * @return HttpClient Возвращает объект асинхронного http клиента
+     * @return HttpClient Returns an object of an asynchronous http client
      */
     public function getClient(): HttpClient
     {
@@ -324,9 +324,9 @@ class HttpDownloader
     }
 
     /**
-     * Устанавливает заголовок http запроса
-     * @param string $name Название заголовка
-     * @param string $value Значение заголовка
+     * Sets the http request header
+     * @param string $name Title name
+     * @param string $value Header value
      */
     public function setHeader( string $name, string $value ): void
     {
@@ -334,7 +334,7 @@ class HttpDownloader
     }
 
     /**
-     * @param array $headers Устанавливает набор заголовков http запроса
+     * @param array $headers Sets a set of http request headers
      */
     public function setHeaders( array $headers ): void
     {
@@ -342,9 +342,9 @@ class HttpDownloader
     }
 
     /**
-     * Возвращает значение указанного заголовка
-     * @param string $name Название заголовка
-     * @return string|null Значение заголовка
+     * Returns the value of the specified header
+     * @param string $name Title name
+     * @return string|null Header value
      */
     public function getHeader( string $name ): ?string
     {
@@ -352,19 +352,18 @@ class HttpDownloader
     }
 
     /**
-     * @return array Возвращает массив заголовков
+     * @return array Returns an array of headers
      */
-    #[Pure]
     public function getHeaders(): array
     {
         return $this->getClient()->getHeaders();
     }
 
     /**
-     * Устанавливает новую cookie
-     * @param string $name Название cookie
-     * @param string $value Значение cookie
-     */
+    * Sets a new cookie
+    * @param string $name Cookie name
+    * @param string $value Cookie value
+    */
     public function setCookie( string $name, string $value ): void
     {
         try {
@@ -375,9 +374,9 @@ class HttpDownloader
     }
 
     /**
-     * Возвращает значение указанной cookie
-     * @param string $name Название cookie
-     * @return string Значение cookie
+     * Returns the value of the specified cookie
+     * @param string $name Cookie name
+     * @return string cookie value
      */
     public function getCookie( string $name ): string
     {
@@ -385,7 +384,7 @@ class HttpDownloader
     }
 
     /**
-     * Удаляет все куки
+     * Deletes all cookies
      */
     public function clearCookie(): void
     {
@@ -435,7 +434,7 @@ class HttpDownloader
     }
 
     /**
-     * @return string|null Возвращает url адрес на который будет отправлен запрос для авторизации
+     * @return string|null Returns the url to which the authorization request will be sent
      */
     public function getAuthUrl(): ?string
     {
@@ -443,7 +442,7 @@ class HttpDownloader
     }
 
     /**
-     * @return string|null Возвращает url адрес страницы, на которой находится форма авторизации
+     * @return string|null Returns the url of the page where the authorization form is located
      */
     public function getAuthFormUrl(): ?string
     {
@@ -451,7 +450,7 @@ class HttpDownloader
     }
 
     /**
-     * @return array Возвращает массив параметров для авторизации
+     * @return array Returns an array of parameters for authorization
      */
     public function getAuthInfo(): array
     {
@@ -459,7 +458,7 @@ class HttpDownloader
     }
 
     /**
-     * @return bool Возвращает значение, в зависимости от которого, параметры формы авторизации будут отправлены, как "form_data", либо "request_payload"
+     * @return bool Returns a value, depending on which the authorization form parameters will be sent as "form_data" or " request_payload"
      */
     public function getApiAuth(): bool
     {
@@ -467,7 +466,7 @@ class HttpDownloader
     }
 
     /**
-     * @return string|null Возвращает проверочное слово авторизации
+     * @return string|null Returns the authorization verification word
      */
     public function getCheckLoginText(): ?string
     {
@@ -475,7 +474,7 @@ class HttpDownloader
     }
 
     /**
-     * Процесс авторизации
+     * Authorization process
      * @param null $callback
      * @return bool
      */
@@ -508,13 +507,13 @@ class HttpDownloader
     }
 
     /**
-     * Используется для получения полей формы
-     * @param string|Link $link Ссылка на страницу, где расположена форма
-     * @param string $field_name Имя поля, находящееся внутри нужной формы. По имени этого поля будет роизведен поиск формы
-     * Для получения всех полей из любой формы необходимо передать пустое значение
-     * @param array $params Массив параметров с исходными значениями, если они есть
-     * @param bool $only_hidden Параметер позволяет собирать все поля формы или только скрытые. По-умолчанию собираются все поля формы
-     * @return array Ассоциативный массив, в котором ключи - имена полей формы, значения - значения полей формы
+     * Used to get form fields
+     * @param string|Link $link Link to the page where the form is located
+     * @param string $field_name The name of the field located inside the desired form. The form will be searched by the name of this field
+     * To get all fields from any form, you must pass an empty value
+     * @param array $params Array of parameters with the original values, if any
+     * @ * @param bool $only_hidden Parameter allows you to collect all the fields of the form or only hidden ones. By default, all fields of the form are collected
+     * @return array An associative array in which the keys are the names of the form fields, the values are the values of the form fields
      */
     public function getFieldsFormOnLink( string|Link $link, string $field_name = '', array $params = [], bool $only_hidden = false ): array
     {
@@ -522,13 +521,13 @@ class HttpDownloader
     }
 
     /**
-     * Используется для получения полей формы
-     * @param ParserCrawler $crawler Html содержимое страницы, где расположена форма
-     * @param string $field_name Имя поля, находящееся внутри нужной формы. По имени этого поля будет роизведен поиск формы
-     * Для получения всех полей из любой формы необходимо передать пустое значение
-     * @param array $params Массив параметров с исходными значениями, если они есть
-     * @param bool $only_hidden Параметер позволяет собирать все поля формы или только скрытые. По-умолчанию собираются все поля формы
-     * @return array Ассоциативный массив, в котором ключи - имена полей формы, значения - значения полей формы
+     * Used to get form fields
+     * @param ParserCrawler $crawler Html content of the page where the form is located
+     * @param string $field_name The name of the field located inside the desired form. The form will be searched by the name of this field
+     * To get all fields from any form, you must pass an empty value
+     * @param array $params Array of parameters with the original values, if any
+     * @ * @param bool $only_hidden Parameter allows you to collect all the fields of the form or only hidden ones. By default, all fields of the form are collected
+     * @return array An associative array in which the keys are the names of the form fields, the values are the values of the form fields
      */
     public function getFieldsFormOnCrawler( ParserCrawler $crawler, string $field_name = '', array $params = [], bool $only_hidden = false ): array
     {
@@ -578,7 +577,8 @@ class HttpDownloader
     }
 
     /**
-     * Проверка авторизации на сайте по проверочному слову
+     * Verification of authorization on the site by the verification word
+     * @Parameter Analyzer crawler $crawler
      * @param ParserCrawler $crawler
      * @return bool
      */
