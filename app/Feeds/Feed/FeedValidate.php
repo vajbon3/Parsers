@@ -32,7 +32,7 @@ class FeedValidate
     {
         $count_items = 1;
         foreach ( $feed_items as $feed_item ) {
-            if ( $feed_item->isGroup() ) {
+            if ( $feed_item->isGroup() && count( $feed_item->getChildProducts() ) ) {
                 $count_items += count( $feed_item->getChildProducts() );
                 foreach ( $feed_item->getChildProducts() as $child_item ) {
                     $this->validateItem( $child_item );
@@ -172,10 +172,12 @@ class FeedValidate
         $filter_images = array_filter( $images );
         if ( count( $images ) > count( $filter_images ) ) {
             $this->attachFailProduct( 'images', 'The image array contains empty values' );
+            return;
         }
 
         if ( array_values( $images ) !== $images ) {
             $this->attachFailProduct( 'images', 'The sequence of keys in the image array is broken' );
+            return;
         }
 
         foreach ( $images as $image ) {
