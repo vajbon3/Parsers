@@ -2,6 +2,7 @@
 
 namespace App\Feeds\Feed;
 
+use App\Helpers\FeedHelper;
 use Illuminate\Support\Facades\Storage;
 use Ms48\LaravelConsoleProgressBar\Facades\ConsoleProgressBar;
 
@@ -63,7 +64,7 @@ class FeedValidate
 
     private function getErrorHeader( string $header_key, array $fails ): string
     {
-        return "\nFail validate " . count( $fails ) . " $header_key in  products:";
+        return "\nFail validate " . count( $fails ) . " $header_key in products:";
     }
 
     private function saveValidateErrors(): void
@@ -100,6 +101,8 @@ class FeedValidate
         $this->validateCostToUs( $item->getCostToUs(), $item->isGroup() );
         $this->validateListPrice( $item->getListPrice(), $item->isGroup() );
         $this->validateCategories( $item->getCategories() );
+        $this->validateShortDesc( $item->getShortdescr() );
+        $this->validateDescription( $item->getFulldescr() );
         $this->validateImages( $item->getImages(), $item->isGroup() );
         $this->validateAvail( $item->getRAvail() );
         $this->validateMpn( $item->mpn, $item->isGroup() );
@@ -129,6 +132,12 @@ class FeedValidate
         }
         else if ( $product_name === "" || $product_name === 'Dummy' ) {
             $this->attachFailProduct( 'product_name', 'Invalid product name' );
+        }
+        elseif ( str_contains( $product_name, '$' ) ) {
+            $this->attachFailProduct( 'product_name', 'Product name contains a cost' );
+        }
+        elseif ( $product_name !== strip_tags( $product_name ) ) {
+            $this->attachFailProduct( 'product_name', 'Product name contains html tags' );
         }
     }
 
@@ -162,6 +171,35 @@ class FeedValidate
         }
     }
 
+    private function validateShortDesc( ?string $desc ): void
+    {
+        if ( is_null( $desc ) ) {
+            return;
+        }
+        if ( str_contains( $desc, '$' ) ) {
+            $this->attachFailProduct( 'short_desc', 'The product short description contains a cost' );
+        }
+        if ( substr_count( $desc, '<ul>' ) > 1 ) {
+            $this->attachFailProduct( 'short_desc', 'The product short description contains extra html tags' );
+        }
+    }
+
+    private function validateDescription( string $desc ): void
+    {
+        $data = FeedHelper::getShortsAndAttributesInDesc( $desc );
+        if ( !is_null( $data[ 'attributes' ] ) ) {
+            $this->attachFailProduct( 'description', 'The product description contains a set of specifications' );
+        }
+
+        if ( count( $data[ 'short_desc' ] ) ) {
+            $this->attachFailProduct( 'description', 'The product description contains a set of features' );
+        }
+
+        if ( str_contains( $data[ 'description' ], '$' ) ) {
+            $this->attachFailProduct( 'description', 'The product description contains a cost' );
+        }
+    }
+
     private function validateImages( array $images, bool $group ): void
     {
         if ( !$group && !count( $images ) ) {
@@ -178,6 +216,10 @@ class FeedValidate
         if ( array_values( $images ) !== $images ) {
             $this->attachFailProduct( 'images', 'The sequence of keys in the image array is broken' );
             return;
+        }
+
+        if ( count( $images ) !== count( array_unique( $images ) ) ) {
+            $this->attachFailProduct( 'images', 'The product contains duplicate images' );
         }
 
         foreach ( $images as $image ) {
@@ -222,6 +264,9 @@ class FeedValidate
                     }
                     if ( is_null( $value ) ) {
                         $this->attachFailProduct( 'attributes', 'The attribute value must not be an null' );
+                    }
+                    if ( str_contains( $value, '$' ) ) {
+                        $this->attachFailProduct( 'attributes', 'The attribute value contains a cost' );
                     }
                     if ( trim( $value ) === '' || mb_strlen( $value, 'utf8' ) > 500 ) {
                         $this->attachFailProduct( 'attributes', 'The length of the attribute value is zero or exceeds 500 characters' );
