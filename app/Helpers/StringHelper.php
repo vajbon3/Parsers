@@ -204,4 +204,82 @@ class StringHelper
 
         return $cleared_link;
     }
+    
+    public static function cutTagsAttributes( string $string ): string
+    {
+        return preg_replace( '/(<[a-z]+)([^>]*)(>)/i', '$1$3', $string );
+    }
+    
+    /**
+     * Cuts tags from the description, leaving the allowed tags, clearing them of styles
+     *
+     * @param string $full_desc
+     * @param bool $flag
+     * @param array $tags
+     * @return null|string
+     */
+    public static function cutTags( string $full_desc, bool $flag = true, array $tags = [] ): ?string
+    {
+        $mass = [
+            'span',
+            'p',
+            'br',
+            'ol',
+            'ul',
+            'li',
+            'table',
+            'thead',
+            'tbody',
+            'th',
+            'tr',
+            'td',
+        ];
+
+        $regexps = [
+            '/<script[^>]*?>.*?<\/script>/i',
+            '/<noscript[^>]*?>.*?<\/noscript>/i',
+            '/<style[^>]*?>.*?<\/style>/i',
+            '/<video[^>]*?>.*?<\/video>/i',
+            '/<a[^>]*?>.*?<\/a>/i',
+            '/<iframe[^>]*?>.*?<\/iframe>/i'
+        ];
+        foreach ( $regexps as $regexp ) {
+            if ( preg_match( $regexp, $full_desc ) ) {
+                $full_desc = (string)preg_replace( $regexp, '', $full_desc );
+            }
+        }
+
+        $full_desc = (string)self::mb_trim( $full_desc );
+        if ( !$flag ) {
+            $mass = [];
+        }
+
+        if ( !empty( $tags ) && is_array( $tags ) ) {
+            foreach ( $tags as $tag ) {
+                $regexp = '/<(\D+)\s?[^>]*?>/';
+                if ( preg_match( $regexp, $tag, $matches ) ) {
+                    $mass[] = $matches[ 1 ];
+                }
+                else {
+                    $mass[] = $tag;
+                }
+            }
+        }
+
+        $tags_string = '';
+        foreach ( $mass as $tag ) {
+            $tags_string .= "<$tag>";
+        }
+
+        $full_desc = strip_tags( $full_desc, $tags_string );
+        foreach ( $mass as $tag ) {
+
+            $regexp = "/(<$tag)([^>]*)(>)/i";
+
+            if ( preg_match( $regexp, $full_desc ) ) {
+                $full_desc = (string)preg_replace( $regexp, '$1$3', $full_desc );
+            }
+        }
+        return $full_desc;
+    }
 }
