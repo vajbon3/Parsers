@@ -34,6 +34,34 @@ class FeedHelper
 
         return $dims;
     }
+    
+    /**
+    * Gets the product dimensions from a string using regular expressions
+    * @param string $string A string containing the dimensions
+    * @param array $regexes Array of regular expressions for substring search
+    * @param int $x_index Product length index
+    * @param int $y_index Product height index
+    * @param int $z_index Product width index
+    * @return null[] An array containing the dimensions of the product
+    */
+    public static function getDimsRegexp( string $string, array $regexes, int $x_index = 1, int $y_index = 2, int $z_index = 3 ): array
+    {
+        $dims = [
+            'x' => null,
+            'y' => null,
+            'z' => null
+        ];
+
+        foreach ( $regexes as $regex ) {
+            if ( preg_match( $regex, $string, $matches ) ) {
+                $dims[ 'x' ] = isset( $matches[ $x_index ] ) ? StringHelper::getFloat( $matches[ $x_index ] ) : null;
+                $dims[ 'y' ] = isset( $matches[ $y_index ] ) ? StringHelper::getFloat( $matches[ $y_index ] ) : null;
+                $dims[ 'z' ] = isset( $matches[ $z_index ] ) ? StringHelper::getFloat( $matches[ $z_index ] ) : null;
+            }
+        }
+
+        return $dims;
+    }
 
     /**
      * Converts weight from grams to pounds
@@ -64,5 +92,53 @@ class FeedHelper
     public static function convert( ?float $value, float $contain_value ): ?float
     {
         return StringHelper::normalizeFloat( $value * $contain_value );
+    }
+    
+    /**
+    * Searches for product features and characteristics in the description using regular expressions
+    * @param string $description Product Description
+    * @param array $regexes Array of regular expressions
+    * @ * @param array $sort_desc Array of product features
+    * @param array $attributes Array of product characteristics
+    * @return array Returns an array containing
+    *  [
+    *     'description' => string - product description cleared of features and characteristics
+    *     'short_desc' = > array - array of product features
+    *     'attributes' => array|null - an array of product characteristics
+    *  ]
+    */
+    public static function getShortsAndAttributesInDesc( string $description, array $regexes = [], array $short_desc = [], array $attributes = [] ): array
+    {
+        $description = StringHelper::cutTagsAttributes( $description );
+
+        $regex_header_list_spec = '<(div>)?(p>)?(span>)?(b>)?(strong>)?Specifications:(\s+)?(<\/div)?(<\/p)?(<\/span)?(<\/b)?(<\/strong)?>';
+        $regex_header_list_feat = '<(div>)?(p>)?(span>)?(b>)?(strong>)?Features:(\s+)?(<\/div)?(<\/p)?(<\/span)?(<\/b)?(<\/strong)?>';
+        $regex_content_list = '\s+(<ul>)?(?<content_list><li>.*<\/li>)(<\/ul>)?';
+
+        $regexes[] = "/$regex_header_list_spec$regex_content_list/is";
+        $regexes[] = "/$regex_header_list_feat$regex_content_list/is";
+
+        foreach ( $regexes as $regex ) {
+            if ( preg_match( $regex, $description, $match ) ) {
+                $crawler = new ParserCrawler( $match[ 'content_list' ] );
+                $crawler->filter( 'li' )->each( static function ( ParserCrawler $c ) use ( &$short_desc, &$attributes ) {
+                    $text = $c->text();
+                    if ( str_contains( $text, ':' ) ) {
+                        [ $key, $value ] = explode( ':', $text, 2 );
+                        $attributes[ trim( $key ) ] = trim( $value );
+                    }
+                    else {
+                        $short_desc[] = $text;
+                    }
+                } );
+                $description = (string)preg_replace( $regex, '', $description );
+            }
+        }
+
+        return [
+            'description' => $description,
+            'short_desc' => array_values( array_filter( $short_desc ) ),
+            'attributes' => array_filter( $attributes ) ?: null
+        ];
     }
 }
