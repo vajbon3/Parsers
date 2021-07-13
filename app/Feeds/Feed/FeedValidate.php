@@ -11,6 +11,9 @@ class FeedValidate
     protected FeedItem $current_item;
     private string $dx;
     private array $fails = [];
+    private array $currency = [
+        '\u00a3', '&pound;', '$', '£'
+    ];
     private bool $fail = false;
 
     public function __construct( array $feed_items, $dx_info )
@@ -93,6 +96,16 @@ class FeedValidate
         $this->fails[ $fail_type ][] = $this->getMpnCurrentProduct() . ' - ' . $message;
     }
 
+    private function findPriceInString( string $string ): ?string
+    {
+        foreach ( $this->currency as $currency ) {
+            if ( str_contains( $string, $currency ) ) {
+                return $currency;
+            }
+        }
+        return null;
+    }
+
     private function validateItem( FeedItem $item ): void
     {
         $this->setCurrentItem( $item );
@@ -133,8 +146,8 @@ class FeedValidate
         else if ( $product_name === "" || $product_name === 'Dummy' ) {
             $this->attachFailProduct( 'product_name', 'Invalid product name' );
         }
-        elseif ( str_contains( $product_name, '$' ) ) {
-            $this->attachFailProduct( 'product_name', 'Product name contains a cost' );
+        elseif ( $currency = $this->findPriceInString( $product_name ) ) {
+            $this->attachFailProduct( 'product_name', 'Product name contains ' . $currency );
         }
         elseif ( $product_name !== strip_tags( $product_name ) ) {
             $this->attachFailProduct( 'product_name', 'Product name contains html tags' );
@@ -176,8 +189,8 @@ class FeedValidate
         if ( is_null( $desc ) ) {
             return;
         }
-        if ( str_contains( $desc, '$' ) ) {
-            $this->attachFailProduct( 'short_desc', 'The product short description contains a cost' );
+        if ( $currency = $this->findPriceInString( $desc ) ) {
+            $this->attachFailProduct( 'short_desc', 'The product short description contains ' . $currency );
         }
         if ( substr_count( $desc, '<ul>' ) > 1 ) {
             $this->attachFailProduct( 'short_desc', 'The product short description contains extra html tags' );
@@ -195,8 +208,8 @@ class FeedValidate
             $this->attachFailProduct( 'description', 'The product description contains a set of features' );
         }
 
-        if ( str_contains( $data[ 'description' ], '$' ) ) {
-            $this->attachFailProduct( 'description', 'The product description contains a cost' );
+        if ( $currency = $this->findPriceInString( $data[ 'description' ] ) ) {
+            $this->attachFailProduct( 'description', 'The product description contains ' . $currency );
         }
     }
 
@@ -265,8 +278,8 @@ class FeedValidate
                     if ( is_null( $value ) ) {
                         $this->attachFailProduct( 'attributes', 'The attribute value must not be an null' );
                     }
-                    if ( str_contains( $value, '$' ) ) {
-                        $this->attachFailProduct( 'attributes', 'The attribute value contains a cost' );
+                    if ( $currency = $this->findPriceInString( $value ) ) {
+                        $this->attachFailProduct( 'attributes', 'The attribute value contains ' . $currency );
                     }
                     if ( trim( $value ) === '' || mb_strlen( $value, 'utf8' ) > 500 ) {
                         $this->attachFailProduct( 'attributes', 'The length of the attribute value is zero or exceeds 500 characters' );
