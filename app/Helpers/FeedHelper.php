@@ -2,6 +2,8 @@
 
 namespace App\Helpers;
 
+use App\Feeds\Utils\ParserCrawler;
+
 class FeedHelper
 {
     /**
@@ -95,19 +97,19 @@ class FeedHelper
     }
     
     /**
-    * Searches for product features and characteristics in the description using regular expressions
-    * @param string $description Product Description
-    * @param array $regexes Array of regular expressions
-    * @ * @param array $sort_desc Array of product features
-    * @param array $attributes Array of product characteristics
-    * @return array Returns an array containing
-    *  [
-    *     'description' => string - product description cleared of features and characteristics
-    *     'short_desc' = > array - array of product features
-    *     'attributes' => array|null - an array of product characteristics
-    *  ]
-    */
-    public static function getShortsAndAttributesInDesc( string $description, array $regexes = [], array $short_desc = [], array $attributes = [] ): array
+     * Searches for product features and characteristics in the description using regular expressions
+     * @param string $description Product Description
+     * @param array $user_regexes Array of regular expressions
+     * @param array $short_desc Array of product features
+     * @param array $attributes Array of product characteristics
+     * @return array Returns an array containing
+     *  [
+     *     'description' => string - product description cleared of features and characteristics
+     *     'short_desc' = > array - array of product features
+     *     'attributes' => array|null - an array of product characteristics
+     *  ]
+     */
+    public static function getShortsAndAttributesInDesc( string $description, array $user_regexes = [], array $short_desc = [], array $attributes = [] ): array
     {
         $description = StringHelper::cutTagsAttributes( $description );
 
@@ -117,20 +119,23 @@ class FeedHelper
 
         $regexes[] = "/$regex_header_list_spec$regex_content_list/is";
         $regexes[] = "/$regex_header_list_feat$regex_content_list/is";
+        $regexes = array_merge( $regexes, $user_regexes );
 
         foreach ( $regexes as $regex ) {
-            if ( preg_match( $regex, $description, $match ) ) {
-                $crawler = new ParserCrawler( $match[ 'content_list' ] );
-                $crawler->filter( 'li' )->each( static function ( ParserCrawler $c ) use ( &$short_desc, &$attributes ) {
-                    $text = $c->text();
-                    if ( str_contains( $text, ':' ) ) {
-                        [ $key, $value ] = explode( ':', $text, 2 );
-                        $attributes[ trim( $key ) ] = trim( $value );
-                    }
-                    else {
-                        $short_desc[] = $text;
-                    }
-                } );
+            if ( preg_match_all( $regex, $description, $match ) && isset( $match[ 'content_list' ] ) ) {
+                foreach ( $match[ 'content_list' ] as $content_list ) {
+                    $crawler = new ParserCrawler( $content_list );
+                    $crawler->filter( 'li' )->each( static function ( ParserCrawler $c ) use ( &$short_desc, &$attributes ) {
+                        $text = $c->text();
+                        if ( str_contains( $text, ':' ) ) {
+                            [ $key, $value ] = explode( ':', $text, 2 );
+                            $attributes[ trim( $key ) ] = trim( $value );
+                        }
+                        else {
+                            $short_desc[] = $text;
+                        }
+                    } );
+                }
                 $description = (string)preg_replace( $regex, '', $description );
             }
         }
