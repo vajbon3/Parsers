@@ -348,7 +348,7 @@ class FeedItem
     {
         $descr = FeedHelper::normalizeShortDesc( $descr );
         if ( $descr ) {
-            $this->descr = '<ul><li>' . implode( '</li><li>', $descr ) . '</li></ul>';
+            $this->descr = '<ul><li>' . html_entity_decode( implode( '</li><li>', $descr ) ) . '</li></ul>';
         }
     }
 
@@ -365,7 +365,7 @@ class FeedItem
      */
     public function setFulldescr( string $fulldescr ): void
     {
-        $this->fulldescr = StringHelper::mb_trim( $this->cutTags( $fulldescr ) );
+        $this->fulldescr = StringHelper::mb_trim( StringHelper::cutTags( html_entity_decode( $fulldescr ) ) );
     }
 
     /**
@@ -789,7 +789,7 @@ class FeedItem
      */
     public function setAttributes( ?array $getAttributes ): void
     {
-        $this->attributes = $getAttributes;
+        $this->attributes = $getAttributes ? array_map( static fn( string $attribute ) => html_entity_decode( $attribute ), $getAttributes ) : $getAttributes;
     }
 
     /**
