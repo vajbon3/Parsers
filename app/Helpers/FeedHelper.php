@@ -115,7 +115,7 @@ class FeedHelper
 
         $regex_header_list_spec = '<(div>)?(p>)?(span>)?(b>)?(strong>)?Specifications:(\s+)?(<\/div)?(<\/p)?(<\/span)?(<\/b)?(<\/strong)?>';
         $regex_header_list_feat = '<(div>)?(p>)?(span>)?(b>)?(strong>)?Features:(\s+)?(<\/div)?(<\/p)?(<\/span)?(<\/b)?(<\/strong)?>';
-        $regex_content_list = '\s+(<ul>)?(?<content_list><li>.*<\/li>)(<\/ul>)?';
+        $regex_content_list = '(\s+)?(<ul>)?(\s+)?(?<content_list><li>.*<\/li>)(\s+)?(<\/ul>)?';
 
         $regexes[] = "/$regex_header_list_spec$regex_content_list/is";
         $regexes[] = "/$regex_header_list_feat$regex_content_list/is";
