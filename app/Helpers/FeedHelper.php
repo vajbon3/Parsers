@@ -113,8 +113,8 @@ class FeedHelper
     {
         $description = StringHelper::cutTagsAttributes( $description );
 
-        $regex_header_list_spec = '<(div>)?(p>)?(span>)?(b>)?(strong>)?Specifications:(\s+)?(<\/div)?(<\/p)?(<\/span)?(<\/b)?(<\/strong)?>';
-        $regex_header_list_feat = '<(div>)?(p>)?(span>)?(b>)?(strong>)?Features:(\s+)?(<\/div)?(<\/p)?(<\/span)?(<\/b)?(<\/strong)?>';
+        $regex_header_list_spec = '<(div>)?(p>)?(span>)?(b>)?(strong>)?Specifications:(\s+)?(<\/div)?(<\/p)?(<\/span)?(<\/b)?(<\/strong)?>(\s+)?(<\/\w+>)+?(\s+)?';
+        $regex_header_list_feat = '<(div>)?(p>)?(span>)?(b>)?(strong>)?Features:(\s+)?(<\/div)?(<\/p)?(<\/span)?(<\/b)?(<\/strong)?>(\s+)?(<\/\w+>)+?(\s+)?';
         $regex_content_list = '(\s+)?(<ul>)?(\s+)?(?<content_list><li>.*<\/li>)(\s+)?(<\/ul>)?';
 
         $regexes[] = "/$regex_header_list_spec$regex_content_list/is";
@@ -129,7 +129,7 @@ class FeedHelper
                         $text = $c->text();
                         if ( str_contains( $text, ':' ) ) {
                             [ $key, $value ] = explode( ':', $text, 2 );
-                            $attributes[ trim( $key ) ] = trim( $value );
+                            $attributes[ trim( $key ) ] = trim( StringHelper::normalizeSpaceInString( $value ) );
                         }
                         else {
                             $short_desc[] = $text;
@@ -142,7 +142,7 @@ class FeedHelper
 
         return [
             'description' => $description,
-            'short_desc' => array_values( array_filter( $short_desc ) ),
+            'short_desc' => array_values( array_filter( $short_desc, static fn( string $attribute ) => !empty( str_replace( ' ', '', $attribute ) ) ) ),
             'attributes' => array_filter( $attributes ) ?: null
         ];
     }
