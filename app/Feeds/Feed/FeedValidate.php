@@ -3,6 +3,7 @@
 namespace App\Feeds\Feed;
 
 use App\Helpers\FeedHelper;
+use App\Helpers\StringHelper;
 use Illuminate\Support\Facades\Storage;
 use Ms48\LaravelConsoleProgressBar\Facades\ConsoleProgressBar;
 
@@ -11,9 +12,7 @@ class FeedValidate
     protected FeedItem $current_item;
     private string $dx;
     private array $fails = [];
-    private array $currency = [
-        '\u00a3', '&pound;', '$', '£'
-    ];
+
     private bool $fail = false;
 
     public function __construct( array $feed_items, $dx_info )
@@ -98,12 +97,7 @@ class FeedValidate
 
     private function findPriceInString( string $string ): ?string
     {
-        foreach ( $this->currency as $currency ) {
-            if ( str_contains( $string, $currency ) ) {
-                return $currency;
-            }
-        }
-        return null;
+        return StringHelper::existsMoney( $string ) ?: null;
     }
 
     private function validateItem( FeedItem $item ): void
