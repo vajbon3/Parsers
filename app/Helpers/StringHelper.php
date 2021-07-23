@@ -168,6 +168,19 @@ class StringHelper
         return (float)($matches[0] ?? 0.0);
     }
 
+    public static function existsMoney( string $string ): string
+    {
+        $currency = [
+            '\\\u00a3', '&pound;', '\$', '£'
+        ];
+        foreach ( $currency as $c ) {
+            if ( preg_match( "/$c(\s+)?((\d+)?(\.?\d+))/", $string, $match ) ) {
+                return $match[ 0 ];
+            }
+        }
+        return '';
+    }
+
     public static function getFloat( string $string, ?float $default = null ): ?float
     {
         if ( preg_match( '/\d+\.\d+|\.\d+|\d+/', str_replace( ',', '', $string ), $match_float ) ) {
