@@ -17,6 +17,20 @@ class FeedHelper
         return array_filter( $short_desc, static fn( $desc ) => str_replace( ' ', '', $desc ) );
     }
 
+    public static function removePriceInDesc( string $desc ): string
+    {
+        if ( $desc ) {
+            $crawler = new ParserCrawler( $desc );
+            $children = $crawler->filter( 'body' )->children();
+            foreach ( $children as $child ) {
+                if ( StringHelper::existsMoney( $child->textContent ) ) {
+                    $desc = str_replace( $child->ownerDocument->saveHTML( $child ), '', $desc );
+                }
+            }
+        }
+        return $desc;
+    }
+
     /**
      * Gets the dimensions of the product from the line
      * @param string $string A string containing the dimensions
