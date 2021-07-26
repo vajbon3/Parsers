@@ -233,6 +233,9 @@ class FeedValidate
             if ( !str_contains( $image, 'http:/' ) && !str_contains( $image, 'https:/' ) ) {
                 $this->attachFailProduct( 'images', 'The image link address must contain the http or https protocol' );
             }
+            elseif ( $image === 'http://' || $image === 'https://' ){
+                $this->attachFailProduct( 'images', 'The image link address contain only http or https protocol' );
+            }
         }
     }
 
