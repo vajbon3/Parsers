@@ -208,11 +208,17 @@ class FeedItem
                     $children = array_reduce( $children, function ( $c, FeedItem $child ) use ( $parser ) {
                             if ( !isset( $c[ $child->getMpn() ] ) ) {
                                 $c[ $child->getMpn() ] = $child;
-                                $child->setGroupMask( $this->getProduct() );
+
+                                if ( is_null( $child->getGroupMask() ) ) {
+                                    $child->setGroupMask( $this->getProduct() );
+                                }
                                 $child->setMultOrderQuantity( $child->getMinAmount() > 1 ? 'Y' : 'N' );
                                 $child->setBrandName( $child->getBrandName() ?: $parser->getVendor()->getSupplierName() );
                                 $child->setProductCode( strtoupper( $parser->getVendor()->getPrefix() . $child->getMpn() ) );
-                                $child->setSupplierInternalId( $parser->getInternalId() );
+
+                                if ( empty( $child->getSupplierInternalId() ) ) {
+                                    $child->setSupplierInternalId( $parser->getInternalId() );
+                                }
                                 $child->setHashProduct();
                             }
 
