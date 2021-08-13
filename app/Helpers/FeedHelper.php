@@ -114,12 +114,13 @@ class FeedHelper
 
         $regexes_other = [
             '/Product Code(:)?(\s+)?.*?(\.|\!|\?|\W)/is',
+            '/(\s*)?(\+)?([- _():=+]?\d[- _():=+]?){10,14}(\s*)/',
         ];
 
         $regexes = array_merge( $regexes_other, $regexes_shipping, $regexes_price, $user_regex );
         foreach ( $regexes as $regex ) {
             if ( preg_match( $regex, $string ) ) {
-                $string = $replace ? preg_replace( $regex, '', $string ) : '';
+                $string = $replace ? (string)preg_replace( $regex, '', $string ) : '';
             }
         }
         return $string;
