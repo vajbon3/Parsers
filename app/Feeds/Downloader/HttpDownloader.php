@@ -98,6 +98,14 @@ class HttpDownloader
     }
 
     /**
+     * @return bool
+     */
+    public function getStaticUserAgent(): bool
+    {
+        return $this->static_user_agent;
+    }
+
+    /**
      * @param string $user_agent Sets the user-agent value
      */
     public function setUserAgent( string $user_agent ): void
