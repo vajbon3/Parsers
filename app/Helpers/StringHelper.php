@@ -62,6 +62,103 @@ class StringHelper
         return !empty( preg_replace( '/\s+/', '', self::removeSpaces( $string ) ) );
     }
 
+    /**
+     * Cuts out block tags and hyperlink tags with their contents, clearing the remaining tags from all attributes.
+     * @param string $string
+     * @param bool $flag
+     * @param array $tags
+     * @return null|string
+     */
+    public static function cutTags( string $string, bool $flag = true, array $tags = [] ): ?string
+    {
+        $mass = [
+            'span',
+            'p',
+            'br',
+            'ol',
+            'ul',
+            'li',
+            'table',
+            'thead',
+            'tbody',
+            'th',
+            'tr',
+            'td',
+        ];
+
+        $regexps = [
+            '/<script[^>]*?>.*?<\/script>/i',
+            '/<noscript[^>]*?>.*?<\/noscript>/i',
+            '/<style[^>]*?>.*?<\/style>/i',
+            '/<video[^>]*?>.*?<\/video>/i',
+            '/<a[^>]*?>.*?<\/a>/i',
+            '/<iframe[^>]*?>.*?<\/iframe>/i'
+        ];
+        foreach ( $regexps as $regexp ) {
+            if ( preg_match( $regexp, $string ) ) {
+                $string = (string)preg_replace( $regexp, '', $string );
+            }
+        }
+
+        $string = (string)self::mb_trim( $string );
+        if ( !$flag ) {
+            $mass = [];
+        }
+
+        if ( !empty( $tags ) && is_array( $tags ) ) {
+            foreach ( $tags as $tag ) {
+                $regexp = '/<(\D+)\s?[^>]*?>/';
+                if ( preg_match( $regexp, $tag, $matches ) ) {
+                    $mass[] = $matches[ 1 ];
+                }
+                else {
+                    $mass[] = $tag;
+                }
+            }
+        }
+
+        $tags_string = '';
+        foreach ( $mass as $tag ) {
+            $tags_string .= "<$tag>";
+        }
+
+        $string = strip_tags( $string, $tags_string );
+        foreach ( $mass as $tag ) {
+
+            $regexp = "/(<$tag)([^>]*)(>)/i";
+
+            if ( preg_match( $regexp, $string ) ) {
+                $string = (string)preg_replace( $regexp, '$1$3', $string );
+            }
+        }
+        return $string;
+    }
+
+    /**
+     * Cuts out all tag attributes
+     * @param string $string
+     * @return string
+     */
+    public static function cutTagsAttributes( string $string ): string
+    {
+        return preg_replace( '/(<[a-z]+)([^>]*)(>)/i', '$1$3', $string );
+    }
+
+    /**
+     * Cuts out empty tags
+     * @param string $string
+     * @return string
+     */
+    public static function cutEmptyTags( string $string ): string
+    {
+        $string = preg_replace( '/<\w+>(\s+)?<\/\w+>/', '', $string );
+        if ( preg_match( '/<\w+>(\s+)?<\/\w+>/', $string ) ) {
+            $string = self::cutEmptyTags( $string );
+        }
+        return $string;
+    }
+
+
     public static function mb_ucfirst( $string, $encoding = 'UTF-8' ): string
     {
         $strlen = mb_strlen( $string, $encoding );
@@ -253,81 +350,5 @@ class StringHelper
         return $cleared_link;
     }
 
-    public static function cutTagsAttributes( string $string ): string
-    {
-        return preg_replace( '/(<[a-z]+)([^>]*)(>)/i', '$1$3', $string );
-    }
 
-    /**
-     * Cuts tags from the description, leaving the allowed tags, clearing them of styles
-     *
-     * @param string $full_desc
-     * @param bool $flag
-     * @param array $tags
-     * @return null|string
-     */
-    public static function cutTags( string $full_desc, bool $flag = true, array $tags = [] ): ?string
-    {
-        $mass = [
-            'span',
-            'p',
-            'br',
-            'ol',
-            'ul',
-            'li',
-            'table',
-            'thead',
-            'tbody',
-            'th',
-            'tr',
-            'td',
-        ];
-
-        $regexps = [
-            '/<script[^>]*?>.*?<\/script>/i',
-            '/<noscript[^>]*?>.*?<\/noscript>/i',
-            '/<style[^>]*?>.*?<\/style>/i',
-            '/<video[^>]*?>.*?<\/video>/i',
-            '/<a[^>]*?>.*?<\/a>/i',
-            '/<iframe[^>]*?>.*?<\/iframe>/i'
-        ];
-        foreach ( $regexps as $regexp ) {
-            if ( preg_match( $regexp, $full_desc ) ) {
-                $full_desc = (string)preg_replace( $regexp, '', $full_desc );
-            }
-        }
-
-        $full_desc = (string)self::mb_trim( $full_desc );
-        if ( !$flag ) {
-            $mass = [];
-        }
-
-        if ( !empty( $tags ) && is_array( $tags ) ) {
-            foreach ( $tags as $tag ) {
-                $regexp = '/<(\D+)\s?[^>]*?>/';
-                if ( preg_match( $regexp, $tag, $matches ) ) {
-                    $mass[] = $matches[ 1 ];
-                }
-                else {
-                    $mass[] = $tag;
-                }
-            }
-        }
-
-        $tags_string = '';
-        foreach ( $mass as $tag ) {
-            $tags_string .= "<$tag>";
-        }
-
-        $full_desc = strip_tags( $full_desc, $tags_string );
-        foreach ( $mass as $tag ) {
-
-            $regexp = "/(<$tag)([^>]*)(>)/i";
-
-            if ( preg_match( $regexp, $full_desc ) ) {
-                $full_desc = (string)preg_replace( $regexp, '$1$3', $full_desc );
-            }
-        }
-        return $full_desc;
-    }
 }
