@@ -30,6 +30,126 @@ class StringHelper
     }
 
     /**
+     * Brings the json string to a valid form, by escaping double quotes in the text
+     * @param string $string
+     * @return string
+     */
+    public static function normalizeJsonString( string $string ): string
+    {
+        $string = stripslashes( self::removeSpaces( self::cutTagsAttributes( $string ) ) );
+        $string = str_replace( [ 'true', 'false', 'null' ], [ '"true"', '"false"', '"null"' ], $string );
+        $clear_string = '';
+
+        $symbols_in_string = preg_split( "//u", $string, -1, PREG_SPLIT_NO_EMPTY );
+        foreach ( $symbols_in_string as $key => $symbol ) {
+
+            /** Is the opening quote in the key or value in the json string **/
+            $is_left = true;
+
+            /** Is the closing quotation mark in the key or value in the json string **/
+            $is_right = true;
+
+            if ( $symbol === '"' ) {
+
+                /** Getting the first character to the left of the quotation mark **/
+                $symbol_before_quote = $symbols_in_string[ $key - 1 ];
+
+                /** If the character is a number, the quotation mark can be a pointer to the unit of measurement (inch) **/
+                if ( is_numeric( $symbol_before_quote ) ) {
+                    $is_left = false;
+                }
+
+                /** If the character is a space or a comma, we get the next character before it **/
+                if ( $symbol_before_quote === ' ' ) {
+                    $symbol_before_quote = $symbols_in_string[ $key - 2 ];
+                    if ( $symbol_before_quote === ',' ) {
+                        $symbol_before_quote = $symbols_in_string[ $key - 3 ];
+                        if ( $symbol_before_quote === ' ' ) {
+                            $symbol_before_quote = $symbols_in_string[ $key - 4 ];
+                        }
+                    }
+                }
+                elseif ( $symbol_before_quote === ',' ) {
+                    $symbol_before_quote = $symbols_in_string[ $key - 2 ];
+                    if ( $symbol_before_quote === ' ' ) {
+                        $symbol_before_quote = $symbols_in_string[ $key - 3 ];
+                    }
+                }
+
+                if ( !is_numeric( $symbol_before_quote ) && !in_array( $symbol_before_quote, [ '[', '{', ':', '"', '}', ']' ] ) ) {
+                    $is_left = false;
+                }
+
+                /** Getting the first character to the right of the quotation mark **/
+                $symbol_after_quote = $symbols_in_string[ $key + 1 ];
+
+                /** If the character is a space or a comma, we get the next character after it **/
+                if ( $symbol_after_quote === ' ' ) {
+                    $symbol_after_quote = $symbols_in_string[ $key + 2 ];
+                    if ( $symbol_after_quote === ',' ) {
+                        $symbol_after_quote = $symbols_in_string[ $key + 3 ];
+                        if ( $symbol_after_quote === ' ' ) {
+                            $symbol_after_quote = $symbols_in_string[ $key + 4 ];
+                        }
+                    }
+                }
+                elseif ( $symbol_after_quote === ',' ) {
+                    $symbol_after_quote = $symbols_in_string[ $key + 2 ];
+                    if ( $symbol_after_quote === ' ' ) {
+                        $symbol_after_quote = $symbols_in_string[ $key + 3 ];
+                    }
+                }
+
+                /** If the character is a quotation mark, and the current quotation mark is the opening one, we are looking for the next quotation mark in the string **/
+                if ( $symbol_after_quote === '"' && $is_right ) {
+                    foreach ( $symbols_in_string as $sub_key => $sub_symbol ) {
+
+                        /** If the character is a quotation mark and its index in the string is greater than the index of the last found quotation mark, we start processing it **/
+                        if ( $sub_key > $key + 4 && $sub_symbol === '"' ) {
+
+                            /** Getting the first character to the right of the quotation mark **/
+                            $symbol_after_quote = $symbols_in_string[ $sub_key + 1 ];
+
+                            /** If the character is a space or a comma, we get the next character after it **/
+                            if ( $symbol_after_quote === ' ' ) {
+                                $symbol_after_quote = $symbols_in_string[ $sub_key + 2 ];
+                                if ( $symbol_after_quote === ',' ) {
+                                    $symbol_after_quote = $symbols_in_string[ $sub_key + 3 ];
+                                    if ( $symbol_after_quote === ' ' ) {
+                                        $symbol_after_quote = $symbols_in_string[ $sub_key + 4 ];
+                                    }
+                                }
+                            }
+                            elseif ( $symbol_after_quote === ',' ) {
+                                $symbol_after_quote = $symbols_in_string[ $sub_key + 2 ];
+                                if ( $symbol_after_quote === ' ' ) {
+                                    $symbol_after_quote = $symbols_in_string[ $sub_key + 3 ];
+                                }
+                            }
+
+                            /** After the first condition is met, we exit the loop so as not to iterate through all the characters to the end of the line **/
+                            break;
+                        }
+                    }
+                }
+
+                if ( !in_array( $symbol_after_quote, [ ':', '"', '}', ']' ] ) ) {
+                    $is_right = false;
+                }
+
+                /** If the quotation mark is neither opening nor closing, we escape it **/
+                if ( !$is_left && !$is_right ) {
+                    $symbols_in_string[ $key ] = "\\$symbol";
+                }
+            }
+
+            $clear_string .= $symbols_in_string[ $key ];
+        }
+
+        return str_replace( [ '"true"', '"false"', '"null"' ], [ 'true', 'false', 'null' ], $clear_string );
+    }
+
+    /**
      * Splits the text into paragraphs according to the specified number of sentences, if the source text does not contain html tags
      * @param string $string Text without html tags
      * @param int $size Number of sentences in one paragraph
