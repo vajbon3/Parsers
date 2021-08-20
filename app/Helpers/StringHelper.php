@@ -421,7 +421,7 @@ class StringHelper
     public static function getMoney( string $price ): float
     {
         $price = str_replace( ',', '', $price );
-        preg_match( '/\d+\.?(\d?)+/', $price, $matches );
+        preg_match( '/(\d+)?(\.?\d+(\.?\d+)?)/', $price, $matches );
         return (float)( $matches[ 0 ] ?? 0.0 );
     }
 
