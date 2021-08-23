@@ -371,7 +371,7 @@ class FeedItem
      */
     public function setFulldescr( string $fulldescr ): void
     {
-        $this->fulldescr = StringHelper::mb_trim( StringHelper::cutTags( html_entity_decode( $fulldescr ) ) );
+        $this->fulldescr = nl2br( FeedHelper::cleanProductDescription( $fulldescr ) );
     }
 
     /**
