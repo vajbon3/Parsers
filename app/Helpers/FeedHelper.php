@@ -279,6 +279,8 @@ class FeedHelper
                 $dims[ 'x' ] = isset( $matches[ $x_index ] ) ? StringHelper::getFloat( $matches[ $x_index ] ) : null;
                 $dims[ 'y' ] = isset( $matches[ $y_index ] ) ? StringHelper::getFloat( $matches[ $y_index ] ) : null;
                 $dims[ 'z' ] = isset( $matches[ $z_index ] ) ? StringHelper::getFloat( $matches[ $z_index ] ) : null;
+
+                return $dims;
             }
         }
 
