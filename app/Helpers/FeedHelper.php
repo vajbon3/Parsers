@@ -13,16 +13,13 @@ class FeedHelper
      */
     public static function cleanProductDescription( string $description ): string
     {
-        if ( !empty( $description ) ) {
+        if ( StringHelper::isNotEmpty( $description ) ) {
             $description = self::cleanProductData( $description );
             $description = StringHelper::cutTagsAttributes( $description );
             $description = str_replace( [ '<br>', '<div>', '</div>' ], [ "\n", '<p>', '</p>' ], html_entity_decode( $description ) );
-            $crawler = new ParserCrawler( $description );
-            if ( $crawler->filter( 'body' )->count() ) {
-                /** Removes empty tags from the product description **/
-                $description = $crawler->filter( 'body' )->html();
-                $description = StringHelper::cutEmptyTags( StringHelper::cutTags( $description ) );
-            }
+
+            /** Removes empty tags from the product description **/
+            $description = StringHelper::cutEmptyTags( StringHelper::cutTags( $description ) );
         }
         return StringHelper::normalizeSpaceInString( $description );
     }
