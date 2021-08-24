@@ -16,12 +16,12 @@ class FeedHelper
         if ( StringHelper::isNotEmpty( $description ) ) {
             $description = self::cleanProductData( $description );
             $description = StringHelper::cutTagsAttributes( $description );
-            $description = str_replace( [ '<br>', '<div>', '</div>' ], [ "\n", '<p>', '</p>' ], html_entity_decode( $description ) );
+            $description = str_replace( [ '<div>', '</div>' ], [ '<p>', '</p>' ], html_entity_decode( StringHelper::removeSpaces( $description ) ) );
 
             /** Removes empty tags from the product description **/
             $description = StringHelper::cutEmptyTags( StringHelper::cutTags( $description ) );
         }
-        return StringHelper::normalizeSpaceInString( $description );
+        return $description;
     }
 
     /**
