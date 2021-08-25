@@ -206,7 +206,7 @@ class FeedHelper
                         'attributes' => []
                     ];
                     if ( isset( $match[ 'delimiter' ] ) ) {
-                        $delimiter = $match[ 'delimiter' ];
+                        $delimiter = array_shift( $match[ 'delimiter' ] );
                         $list_data = self::getShortsAndAttributesInList( str_replace( [ "<$delimiter>", "</$delimiter>" ], [ '<li>', '</li>' ], $content_list ) );
                     }
                     elseif ( str_contains( $content_list, '<li>' ) ) {
