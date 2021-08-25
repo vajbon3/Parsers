@@ -272,6 +272,7 @@ class StringHelper
     public static function cutEmptyTags( string $string ): string
     {
         $string = preg_replace( '/<\w+>(\s+)?<\/\w+>/', '', $string );
+        $string = preg_replace( '/<\w+>(\s+)?(<br>(\s+)?)+(\s+)?<\/\w+>/i', '', $string );
         if ( preg_match( '/<\w+>(\s+)?<\/\w+>/', $string ) ) {
             $string = self::cutEmptyTags( $string );
         }
