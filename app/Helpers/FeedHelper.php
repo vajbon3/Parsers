@@ -174,7 +174,7 @@ class FeedHelper
             'attributes' => $attributes
         ];
 
-        $regex_pattern = '<(div|p|span|b|strong|h\d)>%s(\s+)?((<\/\w+>)+)?:?(\s+)?<\/(div|p|span|b|strong|h\d)>(\s+)?((<\/\w+>)+)?(\s+)?';
+        $regex_pattern = '<(div|p|span|b|strong|h\d|em)>%s(\s+)?((<\/\w+>)+)?:?(\s+)?<\/(div|p|span|b|strong|h\d|em)>(\s+)?((<\w+>)+)?((<\/\w+>)+)?((<\w+>)+)?(\s+)?';
 
         $keys = [
             'Dimension(s)?',
