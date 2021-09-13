@@ -441,14 +441,14 @@ class StringHelper
     public static function getFloat( ?string $string, ?float $default = null ): ?float
     {
         $replacements = [
-            '¼' => '1/4',
-            '½' => '1/2',
-            '¾' => '3/4',
+            '¼' => ' 1/4',
+            '½' => ' 1/2',
+            '¾' => ' 3/4',
         ];
 
         $string = str_replace( array_keys( $replacements ), array_values( $replacements ), $string );
         $string = trim( $string );
-        if ( preg_match( '/(\d+\s)?(\.?\d+(\.?\/?\d+)?)/', str_replace( ',', '', $string ), $match_float ) ) {
+        if ( preg_match( '/(\d+\s)?(\s+)?(-)?(\s+)?(\.?\d+(\.?\/?\d+)?)/', str_replace( ',', '', $string ), $match_float ) ) {
             if ( str_contains( $match_float[ 2 ], '/' ) ) {
                 [ $divisible, $divisor ] = explode( '/', $match_float[ 2 ] );
                 $match_float[ 2 ] = $divisible / $divisor;
