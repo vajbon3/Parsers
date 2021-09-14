@@ -448,12 +448,14 @@ class StringHelper
 
         $string = str_replace( array_keys( $replacements ), array_values( $replacements ), $string );
         $string = trim( $string );
-        if ( preg_match( '/(\d+\s)?(\s+)?(-)?(\s+)?(\.?\d+(\.?\/?\d+)?)/', str_replace( ',', '', $string ), $match_float ) ) {
-            if ( str_contains( $match_float[ 2 ], '/' ) ) {
-                [ $divisible, $divisor ] = explode( '/', $match_float[ 2 ] );
-                $match_float[ 2 ] = $divisible / $divisor;
+        if ( preg_match( '/(?<integer>\d+\s)?(-)?(\s+)?(?<fractional>\.?\d+(\.?\/?\d+)?)/', str_replace( ',', '', $string ), $match_float ) ) {
+            if ( isset( $match_float[ 'fractional' ] ) && str_contains( $match_float[ 'fractional' ], '/' ) ) {
+                [ $divisible, $divisor ] = explode( '/', $match_float[ 'fractional' ] );
+                $match_float[ 'fractional' ] = $divisible / $divisor;
             }
-            return self::normalizeFloat( isset( $match_float[ 1 ] ) ? (float)$match_float[ 1 ] + (float)$match_float[ 2 ] : (float)$match_float[ 2 ], $default );
+            return self::normalizeFloat( isset( $match_float[ 'integer' ] )
+                ? (float)$match_float[ 'integer' ] + (float)$match_float[ 'fractional' ]
+                : (float)$match_float[ 'fractional' ], $default );
         }
         return $default;
     }
