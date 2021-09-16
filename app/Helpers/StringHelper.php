@@ -273,7 +273,7 @@ class StringHelper
     {
         $clean_regex = [
             '/<[u|o]l>((\s+)?<li>(\s+)?)+<\/[u|o]l>/is',
-            '/<[^<br>]>(\s+)?((<br>(\s+)?)+)?(\s+)?<\/\w+>/i'
+            '/<[^<br>|^\/](\w+){0,10}>(\s+)?((<br>(\s+)?)+)?(\s+)?<\/\w+>/i'
         ];
         $string = preg_replace( $clean_regex, '', self::normalizeSpaceInString( $string ) );
         foreach ( $clean_regex as $regex ) {
