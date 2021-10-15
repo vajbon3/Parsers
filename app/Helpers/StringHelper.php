@@ -13,7 +13,7 @@ class StringHelper
      */
     public static function removeSpaces( string $string ): string
     {
-        $string = str_replace( "\n", ' ', $string );
+        $string = str_replace( [ "\n", '\n' ], ' ', $string );
         return trim( preg_replace( '/[ \s]+/u', ' ', $string ) );
     }
 
@@ -233,7 +233,7 @@ class StringHelper
             }
         }
 
-        $string = self::mb_trim( $string );
+        $string = self::trim( $string );
         if ( !$flag ) {
             $mass = [];
         }
@@ -315,13 +315,14 @@ class StringHelper
     }
 
     /**
-     * @param $string
+     * @param string $string
      * @param string|string[] $trim_chars
      * @return string
      */
-    public static function mb_trim( $string, array|string $trim_chars = "\s" ): string
+    public static function trim( string $string, array|string $trim_chars = '' ): string
     {
-        return (string)preg_replace( '/^[' . $trim_chars . ']*(?U)(.*)[' . $trim_chars . ']*$/u', '\\1', $string );
+        $trim_chars = is_array( $trim_chars ) ? implode( '', $trim_chars ) : $trim_chars;
+        return self::removeSpaces( trim( $string, " \t\n\r\0\x0B$trim_chars" ) );
     }
 
 
@@ -362,7 +363,7 @@ class StringHelper
         switch ( strlen( $upc_code ) ) {
             case 14:
                 $cd = self::UPC_calculate_check_digit( $upc_code );
-                if ( $cd !== $upc_code[ strlen( $upc_code ) - 1 ] ) {
+                if ( $cd !== (int)$upc_code[ strlen( $upc_code ) - 1 ] ) {
                     return substr( $upc_code, 0, -1 ) . $cd;
                 }
                 return $upc_code;
@@ -370,7 +371,7 @@ class StringHelper
             case 12:
             case 13:
                 $cd = self::UPC_calculate_check_digit( $upc_code );
-                if ( $cd !== $upc_code[ strlen( $upc_code ) - 1 ] ) {
+                if ( $cd !== (int)$upc_code[ strlen( $upc_code ) - 1 ] ) {
                     if ( !self::isISBN( $upc_code ) || ( self::isISBN( $upc_code ) && strlen( $upc_code ) === 12 ) ) {
                         $cd = self::UPC_calculate_check_digit( $upc_code . '1' );
                         return $upc_code . $cd;
