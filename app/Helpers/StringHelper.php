@@ -321,8 +321,7 @@ class StringHelper
      */
     public static function trim( string $string, array|string $trim_chars = '' ): string
     {
-        $trim_chars = is_array( $trim_chars ) ? implode( '', $trim_chars ) : $trim_chars;
-        return self::removeSpaces( trim( $string, " \t\n\r\0\x0B$trim_chars" ) );
+        return (string)preg_replace( '/^[\s' . $trim_chars . ']*(?U)(.*)[\s' . $trim_chars . ']*$/u', '\\1', $string );
     }
 
 
