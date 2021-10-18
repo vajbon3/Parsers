@@ -14,7 +14,7 @@ class StringHelper
     public static function removeSpaces( string $string ): string
     {
         $string = str_replace( [ "\n", '\n' ], ' ', $string );
-        return trim( preg_replace( '/[ \s]+/u', ' ', $string ) );
+        return self::trim( preg_replace( '/[ \s]+/u', ' ', $string ) );
     }
 
     /**
