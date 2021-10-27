@@ -117,7 +117,7 @@ trait HandleDataTrait
      */
     public function cleanProduct( string $product ): string
     {
-        if ( $this->getMpn() && str_contains( mb_strtolower( $product ), mb_strtolower( $this->getMpn() ) ) ) {
+        if ( $this->getMpn() && mb_strtolower( $product ) !== mb_strtolower( $this->getMpn() ) && str_contains( mb_strtolower( $product ), mb_strtolower( $this->getMpn() ) ) ) {
             $product = preg_replace( "~(\s+)?(-|,|\(|)?(\s+)?{$this->getMpn()}(\s+)?(-|,|\)|)?(\s+)?~i", ' ', $product );
         }
         return $this->cleaning( $product, $this->clean_product_patterns, true );
