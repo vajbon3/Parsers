@@ -14,6 +14,10 @@ trait HandleDataTrait
      */
     protected array $clean_product_patterns = [];
     /**
+     * @var array Набор регулярных выражений для грубой очистки названия товара (если будет найдено совпадение, название удалится целиком)
+     */
+    protected array $remove_product_patterns = [];
+    /**
      * @var array Набор регулярных выражений для мягкой очистки описания (все найденные совпадения будут вырезаны из описания)
      */
     protected array $clean_description_patterns = [];
@@ -120,7 +124,16 @@ trait HandleDataTrait
         if ( $this->getMpn() && mb_strtolower( $product ) !== mb_strtolower( $this->getMpn() ) && str_contains( mb_strtolower( $product ), mb_strtolower( $this->getMpn() ) ) ) {
             $product = preg_replace( "~(\s+)?(-|,|\(|)?(\s+)?{$this->getMpn()}(\s+)?(-|,|\)|)?(\s+)?~i", ' ', $product );
         }
-        return $this->cleaning( $product, $this->clean_product_patterns, true );
+
+        if ( $this->remove_product_patterns ) {
+            foreach ( $this->remove_product_patterns as $product_pattern ) {
+                if ( preg_match( $product_pattern, $product ) ) {
+                    $product = '';
+                    break;
+                }
+            }
+        }
+        return $this->cleaning( $product, $this->clean_product_patterns );
     }
 
     /**
