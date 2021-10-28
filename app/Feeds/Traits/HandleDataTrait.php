@@ -133,7 +133,7 @@ trait HandleDataTrait
                 }
             }
         }
-        return $this->cleaning( $product, $this->clean_product_patterns );
+        return $this->cleaning( $product, $this->clean_product_patterns, true );
     }
 
     /**
