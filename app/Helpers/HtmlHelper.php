@@ -38,6 +38,7 @@ class HtmlHelper
             '/<style[^>]*?>.*?<\/style>/i',
             '/<video[^>]*?>.*?<\/video>/i',
             '/<a[^>]*?>.*?<\/a>/i',
+            '/<!--.*?-->/s',
             '/<iframe[^>]*?>.*?<\/iframe>/i'
         ];
         return (string)preg_replace( $regexps, '', $string );
@@ -99,7 +100,7 @@ class HtmlHelper
                 if ( !in_array( $t, self::$single_tags, true ) && preg_match_all( "/<$t>(?<content>.*?)<\/$t>/s", $string, $c ) ) {
                     foreach ( $c[ 'content' ] as $e ) {
                         if ( !StringHelper::isNotEmpty( $e ) ) {
-                            $string = str_replace( $e, '', $string );
+                            $string = (string)str_replace( $e, ' ', $string );
                             $string = preg_replace( "/<$t>(\s+)?<\/$t>/s", '', $string );
                         }
                     }
