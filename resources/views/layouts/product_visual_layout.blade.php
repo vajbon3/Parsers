@@ -109,6 +109,6 @@
         <div class="js-off-canvas-overlay is-overlay-fixed"></div>
     </div>
 
-    <script async="" src="https://cdn.s3stores.com/static/frontend/dist/js/main.59505752707b6418075e.js"></script>
+    <script async="" src="/../../js/s3stores.js"></script>
 </body>
 </html>
