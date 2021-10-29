@@ -4,6 +4,7 @@ namespace App\Feeds\Feed;
 
 use App\Feeds\Interfaces\ParserInterface;
 use App\Feeds\Parser\HtmlParser;
+use App\Helpers\HtmlHelper;
 use App\Helpers\StringHelper;
 use DateTime;
 use DateTimeZone;
@@ -425,7 +426,7 @@ class FeedItem
             $fulldescr = $this->parser->cleanDescription( $fulldescr );
             $fulldescr = StringHelper::isNotEmpty( $fulldescr ) ? $fulldescr : $this->getProduct();
         }
-        $this->fulldescr = StringHelper::removeSpaces( $fulldescr );
+        $this->fulldescr = StringHelper::removeSpaces( HtmlHelper::cutTags( $fulldescr ) );
     }
 
     /**
