@@ -226,6 +226,7 @@ class FeedItem
                 $this->setHashProduct( $parser->getVendor()->getForce() );
 
                 $parser->afterParse( $this );
+                $this->parser = null;
             } catch ( Throwable $e ) {
                 $message = '  ERROR: failed parse product' . PHP_EOL;
                 $message .= 'message: ' . $e->getMessage() . PHP_EOL;
