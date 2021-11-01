@@ -121,36 +121,37 @@ class FeedsVisual extends Command
 
                 $filters = [];
                 foreach ( $products_log as $general_type => $types_products ) {
-                    $type = array_key_first( $types_products );
-                    $types_products = array_shift( $types_products );
-                    $page_products = array_chunk( $types_products, 60 );
-                    $total_pages = count( $page_products );
-                    foreach ( $page_products as $page => $page_product ) {
-                        ++$page;
+                    foreach ( $types_products as $type => $error_products ) {
+                        $error_products = array_shift( $types_products );
+                        $page_products = array_chunk( $error_products, 60 );
+                        $total_pages = count( $page_products );
+                        foreach ( $page_products as $page => $page_product ) {
+                            ++$page;
 
-                        /**
-                         * [
-                         *      products => array массив товаров, которые будут отображены на странице
-                         *      total_products => int общее количество товаров
-                         *      total_pages => int количество страниц для построения пагинации
-                         * ]
-                         */
-                        $cache_products = json_encode( [ 'products' => $page_product, 'total_products' => count( $types_products ), 'total_pages' => $total_pages ], JSON_THROW_ON_ERROR );
-                        Cache::put( "{$dx_code}__{$storefront}_{$general_type}_" . trim( preg_replace( '/[^a-z0-9]/', '_', $type ), '_' ) . "_$page", $cache_products, 86400 );
-                    }
+                            /**
+                             * [
+                             *      products => array массив товаров, которые будут отображены на странице
+                             *      total_products => int общее количество товаров
+                             *      total_pages => int количество страниц для построения пагинации
+                             * ]
+                             */
+                            $cache_products = json_encode( [ 'products' => $page_product, 'total_products' => count( $error_products ), 'total_pages' => $total_pages ], JSON_THROW_ON_ERROR );
+                            Cache::put( "{$dx_code}__{$storefront}_{$general_type}_" . trim( preg_replace( '/[^a-z0-9]/', '_', $type ), '_' ) . "_$page", $cache_products, 86400 );
+                        }
 
-                    /** Формируем массив фильтров для навигации по типам ошибок валидации товаров **/
-                    if ( $general_type === 'valid' ) {
-                        $filters[ $general_type ] = [
-                            'page_link' => $general_type,
-                            'total_products' => count( $types_products )
-                        ];
-                    }
-                    else {
-                        $filters[ $general_type ][ $type ] = [
-                            'page_link' => "errors/$general_type/" . trim( preg_replace( '/[^a-z0-9]/', '_', $type ), '_' ),
-                            'total_products' => count( $types_products )
-                        ];
+                        /** Формируем массив фильтров для навигации по типам ошибок валидации товаров **/
+                        if ( $general_type === 'valid' ) {
+                            $filters[ $general_type ] = [
+                                'page_link' => $general_type,
+                                'total_products' => count( $error_products )
+                            ];
+                        }
+                        else {
+                            $filters[ $general_type ][ $type ] = [
+                                'page_link' => "errors/$general_type/" . trim( preg_replace( '/[^a-z0-9]/', '_', $type ), '_' ),
+                                'total_products' => count( $error_products )
+                            ];
+                        }
                     }
                 }
 
