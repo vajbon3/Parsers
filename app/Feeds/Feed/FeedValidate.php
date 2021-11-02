@@ -31,7 +31,7 @@ class FeedValidate
         $this->validateItems( $feed_items );
         if ( $this->fail ) {
             $this->saveValidateErrors();
-            print PHP_EOL . 'Validate fail. Check storage/app/logs/' . $this->dx . '_error.json for more information';
+            print PHP_EOL . 'Validate fail. Check storage/app/logs/' . $this->dx . '_error.log for more information';
         }
         else {
             $this->removeValidateErrors();
@@ -203,6 +203,16 @@ class FeedValidate
         if ( substr_count( $desc, '<ul>' ) > 1 ) {
             $this->attachFailProduct( 'short_desc', 'Contains html tags' );
         }
+        if ( str_contains( mb_strtolower( $desc ), 'contact us' ) ) {
+            $this->attachFailProduct( 'short_desc', 'Contact tel' );
+        }
+        if (
+            str_contains( $desc, '@' ) ||
+            str_contains( mb_strtolower( $desc ), 'email' ) ||
+            str_contains( mb_strtolower( $desc ), 'e-mail' )
+        ) {
+            $this->attachFailProduct( 'short_desc', 'Contains email' );
+        }
     }
 
     private function validateDescription( string $desc ): void
@@ -226,6 +236,18 @@ class FeedValidate
 
         if ( !StringHelper::isNotEmpty( strip_tags( $data[ 'description' ] ) ) ) {
             $this->attachFailProduct( 'description', 'Is empty' );
+        }
+
+        if ( str_contains( mb_strtolower( $data[ 'description' ] ), 'contact us' ) ) {
+            $this->attachFailProduct( 'description', 'Contact tel' );
+        }
+
+        if (
+            str_contains( $data[ 'description' ], '@' ) ||
+            str_contains( mb_strtolower( $data[ 'description' ] ), 'email' ) ||
+            str_contains( mb_strtolower( $data[ 'description' ] ), 'e-mail' )
+        ) {
+            $this->attachFailProduct( 'description', 'Contains email' );
         }
     }
 
@@ -288,11 +310,21 @@ class FeedValidate
                     if ( $currency = $this->findPriceInString( $value ) ) {
                         $this->attachFailProduct( 'attributes', 'Attribute value contains price: ' . $currency );
                     }
-                    if ( trim( $key ) === '' ) {
+                    if ( StringHelper::trim( $key ) === '' ) {
                         $this->attachFailProduct( 'attributes', 'Attribute key is empty' );
                     }
-                    if ( trim( $value ) === '' || mb_strlen( $value, 'utf8' ) > 500 ) {
+                    if ( StringHelper::trim( $value ) === '' || mb_strlen( $value, 'utf8' ) > 500 ) {
                         $this->attachFailProduct( 'attributes', 'Attribute value is empty or length more 500 symbols' );
+                    }
+                    if ( str_contains( mb_strtolower( $key ), 'contact us' ) ) {
+                        $this->attachFailProduct( 'attributes', 'Contact tel' );
+                    }
+                    if (
+                        str_contains( $value, '@' ) ||
+                        str_contains( mb_strtolower( $key ), 'email' ) ||
+                        str_contains( mb_strtolower( $key ), 'e-mail' )
+                    ) {
+                        $this->attachFailProduct( 'attributes', 'Contains email' );
                     }
                 }
             }
