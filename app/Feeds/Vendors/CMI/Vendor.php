@@ -8,8 +8,8 @@ use App\Feeds\Utils\Link;
 
 class Vendor extends SitemapHttpProcessor
 {
-
-    protected const CHUNK_SIZE = 30;
+    protected const CHUNK_SIZE = 10;
+    protected const REQUEST_TIMEOUT_S = 100;
 
     protected array $first = [ 'https://www.blankstyle.com/sitemap.xml' ];
 

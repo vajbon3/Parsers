@@ -35,7 +35,7 @@ class Parser extends HtmlParser
 
         $this->description = $results['description'];
         $this->short_desc = array_merge($this->short_desc,$results['short_description']);
-        $this->attributes = $results['attributes'];
+        $this->attributes = $results['attributes'] ?? [];
 
 
         // парсирование json data с саита
@@ -200,7 +200,7 @@ class Parser extends HtmlParser
 
     public function getAvail(): ?int
     {
-        return (stripos($this->getText('.availability_message'),'out of stock') === false) ? self::DEFAULT_AVAIL_NUMBER : 0;
+        return $this->exists("#product-addtocart-button") ? self::DEFAULT_AVAIL_NUMBER : 0;
     }
 
     public function isGroup(): bool

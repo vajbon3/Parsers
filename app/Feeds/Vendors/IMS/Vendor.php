@@ -15,7 +15,8 @@ class Vendor extends SitemapHttpProcessor
 
     public array $custom_products = [
         "https://www.allegromedical.com/products/omni-bio-physics-total-drop-stationary-each/",
-        "https://www.allegromedical.com/products/am-150-hi-lo-treatment-table/"
+        "https://www.allegromedical.com/products/am-150-hi-lo-treatment-table/",
+        "https://www.allegromedical.com/products/depend-real-fit-pull-on-protective-underwear-for-men/"
     ];
 
     public function filterProductLinks( Link $link ): bool
@@ -25,7 +26,10 @@ class Vendor extends SitemapHttpProcessor
 
     public function isValidFeedItem(FeedItem $fi ): bool
     {
+        var_dump($fi->getCostToUs());
+        var_dump($fi->getCostToUs() > 0.0);
         return ($fi->getProduct() !== "" && $fi->getProduct() !== 'Dummy') &&
-            (($fi->mpn !== null && $fi->mpn !== '') || $fi->isGroup());
+            (($fi->mpn !== null && $fi->mpn !== '') || $fi->isGroup())
+            && $fi->getCostToUs() > 0.0;
     }
 }

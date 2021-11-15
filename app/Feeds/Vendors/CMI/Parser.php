@@ -4,6 +4,7 @@ namespace App\Feeds\Vendors\CMI;
 
 use App\Feeds\Feed\FeedItem;
 use App\Feeds\Parser\HtmlParser;
+use App\Feeds\Utils\Data;
 use App\Feeds\Utils\Link;
 use App\Feeds\Utils\ParserCrawler;
 use App\Helpers\FeedHelper;
@@ -89,6 +90,10 @@ class Parser extends HtmlParser
             }
         }
 
+        // если описание пустое, сунуть там имья продукта
+        if($this->description === "") {
+            $this->description = $this->getProduct();
+        }
     }
 
     public function getProduct(): string
@@ -108,7 +113,7 @@ class Parser extends HtmlParser
     public function getCostToUs(): float
     {
         $cost = StringHelper::getMoney($this->getText('#green-price span'));
-        if($cost <= 0) {
+        if($cost === 0.0) {
             $cost = StringHelper::getMoney($this->getText('#msrp'));
         }
         return $cost;
@@ -176,6 +181,7 @@ class Parser extends HtmlParser
             $json = json_decode($matches[0], true, 512, JSON_THROW_ON_ERROR);
 
         }
+
         $c = new ParserCrawler($json["data"]["content"]);
 
         // ключ атрибута
@@ -260,7 +266,7 @@ class Parser extends HtmlParser
                     $fi->setDimY($sizes[$size_key]['y'] ?? $this->getDimX());
 
                     // изображения
-                    $images = $c->filter(".thumb-view a[data-oid='$color_id']")
+                    $images = $c->filter("a[data-oid='$color_id']")
                         ->each(static fn(ParserCrawler $c) => $c->attr('href'));
 
                     // если изображения есть, ставить, если нету - использовать основной
