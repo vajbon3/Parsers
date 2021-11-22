@@ -18,12 +18,8 @@ class Parser extends HtmlParser
     private array $images = [];
     private array $categories = [];
 
-    public function parseContent(Data $data, array $params = []): array
-    {
-        print(PHP_EOL.$params['url'].PHP_EOL);
-
-        return parent::parseContent($data,$params);
-    }
+    // вырезаем параграф с email-ом и цены из описания
+    protected array $remove_description_patterns = ["/[a-z]+@[a-z]+\.[a-z]+/is", "/\$\d+(?:\.\d{1,2}){0,1}/is"];
 
     public function beforeParse(): void
     {
@@ -31,12 +27,16 @@ class Parser extends HtmlParser
         $this->short_desc = $this->getContent("div[id*='bulletdescription'] li");
 
         // возмём features и атрибуты из описания
-        $results = $this->getShortsAndAttributesInDescription($this->description);
+
+        $results = $this->getShortsAndAttributesInDescription($this->description,["~(?<content_list><p>.{0,80}features.*?<\/p>.{0,5}<ul>.*?<\/ul>)~sim", "~(?<content_list><p>.{0,100}specifications.{0,40}<(?:ul|table)>.*?<\/(?:ul|table)>)~sim"]);
 
         $this->description = $results['description'];
         $this->short_desc = array_merge($this->short_desc,$results['short_description']);
         $this->attributes = $results['attributes'] ?? [];
 
+        if($this->description === "") {
+            $this->description = $this->getProduct();
+        }
 
         // парсирование json data с саита
         $child_matches = [];
