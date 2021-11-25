@@ -14,15 +14,29 @@ class Parser extends HtmlParser
     private array $short_desc = [];
     private array $attributes = [];
     private bool $is_group = false;
+    private bool $is_quote = false;
     private array $children = [];
     private array $images = [];
     private array $categories = [];
 
-    // вырезаем параграф с email-ом и цены из описания
-    protected array $remove_description_patterns = ["/[a-z]+@[a-z]+\.[a-z]+/is", "/\$\d+(?:\.\d{1,2}){0,1}/is"];
+    // вырезаем параграф с email-ом и цены из описания, изображения, инфо про гарантий
+    protected array $remove_description_patterns = [
+        '/[a-z]+@[a-z]+\.[a-z]+/is',
+        '/\$\d+(?:\.\d{1,2}){0,1}/is',
+        '/pictured below/is',
+        '/warranty(?:.*?\.|.{0,40}\:.*?\.){0,1}/is'
+        ];
+
+    // вырезаем имья саита
+    protected array $clean_description_patterns = ['/AllegroMedical(?:\.com){0,1}\s.*?\./is'];
 
     public function beforeParse(): void
     {
+        $this->is_quote = $this->exists(".submit-quote-button");
+        if($this->is_quote) {
+            return;
+        }
+
         $this->description = $this->getHtml('div.description div.value');
         $this->short_desc = $this->getContent("div[id*='bulletdescription'] li");
 
@@ -137,6 +151,9 @@ class Parser extends HtmlParser
 
     public function getProduct(): string
     {
+        if($this->is_quote === True) {
+            return "quote";
+        }
         return $this->getText('.page-title');
     }
 
@@ -167,7 +184,7 @@ class Parser extends HtmlParser
 
     public function getCostToUs(): float
     {
-        return StringHelper::getMoney($this->getText("span[id*='product-price'] .price"));
+        return StringHelper::getMoney($this->getText(".product-info-price span[id*='product-price'] .price"));
     }
 
     public function getImages(): array
@@ -227,6 +244,7 @@ class Parser extends HtmlParser
                 $child_fi->setListPrice($child_info['prices']['msrp']);
             }
             $child_fi->setRAvail($child_info['avail'] ?? self::DEFAULT_AVAIL_NUMBER);
+
             $child[] = $child_fi;
         }
 

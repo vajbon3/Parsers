@@ -11,17 +11,17 @@ class Vendor extends SitemapHttpProcessor
 
     protected const CHUNK_SIZE = 10;
 
-    protected array $first = [ 'https://www.allegromedical.com/pub/sitemap/allegromedical/products.xml' ];
+    protected array $first = ['https://www.allegromedical.com/pub/sitemap/allegromedical/products.xml'];
 
-    public function filterProductLinks( Link $link ): bool
+    public function filterProductLinks(Link $link): bool
     {
-        return str_contains($link->getUrl(),'/products/');
+        return str_contains($link->getUrl(), '/products/');
     }
 
-    public function isValidFeedItem(FeedItem $fi ): bool
+    public function isValidFeedItem(FeedItem $fi): bool
     {
-        return ($fi->getProduct() !== "" && $fi->getProduct() !== 'Dummy') &&
-            (($fi->mpn !== null && $fi->mpn !== '') || $fi->isGroup())
+        return ($fi->getProduct() !== "" && $fi->getProduct() !== 'Dummy' && $fi->getProduct() !== "Quote")
+            && (($fi->mpn !== null && $fi->mpn !== '') || $fi->isGroup())
             && $fi->getCostToUs() > 0.0;
     }
 }
