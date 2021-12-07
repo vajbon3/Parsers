@@ -4,7 +4,6 @@ namespace App\Feeds\Vendors\IMS;
 
 use App\Feeds\Feed\FeedItem;
 use App\Feeds\Parser\HtmlParser;
-use App\Feeds\Utils\Data;
 use App\Feeds\Utils\ParserCrawler;
 use App\Helpers\StringHelper;
 
@@ -19,16 +18,22 @@ class Parser extends HtmlParser
     private array $images = [];
     private array $categories = [];
 
-    // вырезаем параграф с email-ом и цены из описания, изображения, инфо про гарантий
     protected array $remove_description_patterns = [
         '/[a-z]+@[a-z]+\.[a-z]+/is',
         '/\$\d+(?:\.\d{1,2}){0,1}/is',
         '/pictured below/is',
-        '/warranty(?:.*?\.|.{0,40}\:.*?\.){0,1}/is'
+        "/warranty.{0,20}:/is",
         ];
 
-    // вырезаем имья саита
-    protected array $clean_description_patterns = ['/AllegroMedical(?:\.com){0,1}\s.*?\./is'];
+    protected array $clean_description_patterns = [
+        '/AllegroMedical(?:\.com){0,1}\s.*?\./is',
+        "/\.[a-z\s']{0,100}Warranty.*?./is",
+        "/(?:<center>.{0,5}){0,1}<h\d>.{0,5}.{0,50}.{0,5}<\/h\d>(?:.{0,5}<\/center>){0,1}/is",
+        "/<li>[a-z\s']{0,50}warranty[a-z\s'\.]{0,50}<\/li>/is",
+        "/<center>.{0,5}<img.*<\/center>/is",
+        "/<[a-z0-9]+><strong>.*?<\/strong><\/[a-z0-9]+>/is",
+        "/<[a-z0-9]+><small>.*?<\/small><\/[a-z0-9]+>/is",
+    ];
 
     public function beforeParse(): void
     {
@@ -37,6 +42,7 @@ class Parser extends HtmlParser
             return;
         }
 
+        // описания
         $this->description = $this->getHtml('div.description div.value');
         $this->short_desc = $this->getContent("div[id*='bulletdescription'] li");
 
@@ -45,11 +51,27 @@ class Parser extends HtmlParser
         $results = $this->getShortsAndAttributesInDescription($this->description,["~(?<content_list><p>.{0,80}features.*?<\/p>.{0,5}<ul>.*?<\/ul>)~sim", "~(?<content_list><p>.{0,100}specifications.{0,40}<(?:ul|table)>.*?<\/(?:ul|table)>)~sim"]);
 
         $this->description = $results['description'];
-        $this->short_desc = array_merge($this->short_desc,$results['short_description']);
+        $shorts = $results['short_description'];
         $this->attributes = $results['attributes'] ?? [];
+
+        // чек на оригинальность
+        foreach($shorts as $li) {
+            if(!in_array($li, $this->short_desc, true)) {
+                $this->short_desc[] = $li;
+            }
+        }
 
         if($this->description === "") {
             $this->description = $this->getProduct();
+        }
+
+        // вырезаем из шорта размеры если они уже есть в атрибуты
+        if(isset($this->attributes['Size']) || isset($this->attributes['size'])) {
+            foreach($this->short_desc as $key => $li) {
+                if(stripos($li,'size')  !== false) {
+                    unset($this->short_desc[$key]);
+                }
+            }
         }
 
         // парсирование json data с саита
