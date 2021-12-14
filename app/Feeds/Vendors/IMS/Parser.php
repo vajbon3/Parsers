@@ -19,20 +19,25 @@ class Parser extends HtmlParser
     private array $categories = [];
 
     protected array $remove_description_patterns = [
-        '/[a-z]+@[a-z]+\.[a-z]+/is',
-        '/\$\d+(?:\.\d{1,2}){0,1}/is',
-        '/pictured below/is',
-        "/warranty.{0,20}:/is",
+        '/[a-z]+@[a-z]+\.[a-z]+/is', # email
+        '/\$\d+(?:\.\d{1,2}){0,1}/is', # цена
+        '/pictured below/is', # текст до изображения
+        "/warranty.{0,20}:/is", # гарантии
         ];
 
     protected array $clean_description_patterns = [
-        '/AllegroMedical(?:\.com){0,1}\s.*?\./is',
-        "/\.[a-z\s']{0,100}Warranty.*?./is",
-        "/(?:<center>.{0,5}){0,1}<h\d>.{0,5}.{0,50}.{0,5}<\/h\d>(?:.{0,5}<\/center>){0,1}/is",
-        "/<li>[a-z\s']{0,50}warranty[a-z\s'\.]{0,50}<\/li>/is",
-        "/<center>.{0,5}<img.*<\/center>/is",
-        "/<[a-z0-9]+><strong>.*?<\/strong><\/[a-z0-9]+>/is",
-        "/<[a-z0-9]+><small>.*?<\/small><\/[a-z0-9]+>/is",
+        '/AllegroMedical(?:\.com){0,1}\s.*?\./is', # имья саита
+        "/\.[a-z\s']{0,100}Warranty.*?./is", # гарантии
+        "/(?:<center>.{0,5}){0,1}<h\d>.{0,5}.{0,50}.{0,5}<\/h\d>(?:.{0,5}<\/center>){0,1}/is", # имья продукта
+        "/<li>[a-z\s']{0,50}warranty[a-z\s'\.]{0,50}<\/li>/is", #  гарантии в features
+        "/<center>.{0,5}<img.*<\/center>/is", # изображение
+        "/<[a-z0-9]+><strong>.*?(?<!:)<\/strong><\/[a-z0-9]+>/is", # strong текст ( часто имена )
+        "/<[a-z0-9]+><small>.*?<\/small><\/[a-z0-9]+>/is", # мелький текст
+        '/(?:<strong>.{0,20}warning.*?<\/strong>){0,1}(?<=>)[a-z\s\d&;-]*<a.*?<\/a>/is', # ссылка и его текст
+        '/(?<=<li>)<br>/is', # br теги до текста в личке
+        '/<br>(?=<\/li>)/is', # br теги после текста в личке
+        '/(?<=>)[a-z\s\d]+available in.*?(?=\<)/is', # строки про других продуктов
+        '/<table.*<\/table>/is' # удалить таблицу
     ];
 
     public function beforeParse(): void
@@ -48,11 +53,23 @@ class Parser extends HtmlParser
 
         // возмём features и атрибуты из описания
 
-        $results = $this->getShortsAndAttributesInDescription($this->description,["~(?<content_list><p>.{0,80}features.*?<\/p>.{0,5}<ul>.*?<\/ul>)~sim", "~(?<content_list><p>.{0,100}specifications.{0,40}<(?:ul|table)>.*?<\/(?:ul|table)>)~sim"]);
+        $results = $this->getShortsAndAttributesInDescription($this->description,["~(?<content_list><p.{0,80}(?:<b.{0,80}>){0,1}.{0,40}features.*?<\/ul>)~sim", "~(?<content_list><p>.{0,100}specifications.{0,40}<(?:ul|table)>.*?<\/(?:ul|table)>)~sim"]);
 
         $this->description = $results['description'];
         $shorts = $results['short_description'];
         $this->attributes = $results['attributes'] ?? [];
+
+        // если метод не заработает правельно, возмём features самы
+        $matches = [];
+        preg_match('/<p.{0,80}(?:<b.{0,80}>){0,1}.{0,40}features.*?<\/ul>/is',$this->description,$matches);
+        preg_replace('/<p.{0,80}(?:<b.{0,80}>){0,1}.{0,40}features.*?<\/ul>/is','',$this->description);
+
+        foreach($matches as $match) {
+            $ul = new ParserCrawler($match);
+            $ul->filter('li')->each(static function($li) use(&$shorts) {
+                $shorts[] = $li->text();
+            });
+        }
 
         // чек на оригинальность
         foreach($shorts as $li) {
