@@ -33,7 +33,7 @@ class Parser extends HtmlParser
         "/<center>.{0,5}<img.*<\/center>/is", # изображение
         "/<(?!li)[a-z0-9]+><strong>.*?(?<!:)<\/strong><\/[a-z0-9]+>.*?(?=<)/is", # strong текст ( часто имена )
         "/<[a-z0-9]+><small>.*?<\/small><\/[a-z0-9]+>/is", # мелький текст
-        '/(?:<strong>.{0,20}warning.*?<\/strong>){0,1}(?<=>)[a-z\s\d&;-]*<a.*?<\/a>/is', # ссылка и его текст
+        '/(?:<strong>.{0,20}warning.*?<\/strong>){0,1}(?<=>)[a-z\s\d&;-]*<a.*?<\/a>/isu', # ссылка и его текст
         '/(?<=<li>)<br>/is', # br теги до текста в личке
         '/<br>(?=<\/li>)/is', # br теги после текста в личке
         '/(?<=>)[a-z\s\d]+available in.*?(?=\<)/is', # строки про других продуктов
@@ -74,8 +74,6 @@ class Parser extends HtmlParser
         // чек на оригинальность
         foreach($shorts as $li) {
             if(!in_array($li,$this->short_desc,false)) {
-                var_dump($this->short_desc);
-                var_dump($li);
                 $this->short_desc[] = $li;
             }
         }
