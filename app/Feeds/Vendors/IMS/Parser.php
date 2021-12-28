@@ -29,9 +29,9 @@ class Parser extends HtmlParser
         '/AllegroMedical(?:\.com){0,1}\s.*?\./is', # имья саита
         "/\.[a-z\s']{0,100}Warranty.*?./is", # гарантии
         "/(?:<center>.{0,5}){0,1}<h\d>.{0,5}.{0,50}.{0,5}<\/h\d>(?:.{0,5}<\/center>){0,1}/is", # имья продукта
-        "/<li>[a-z\s']{0,50}warranty[a-z\s'\.]{0,50}<\/li>/is", #  гарантии в features
+        "/<li>[a-z\s'<>\-\d]{0,50}warranty.*?<\/li>/is", #  гарантии в features
         "/<center>.{0,5}<img.*<\/center>/is", # изображение
-        "/<[a-z0-9]+><strong>.*?(?<!:)<\/strong><\/[a-z0-9]+>/is", # strong текст ( часто имена )
+        "/<(?!li)[a-z0-9]+><strong>.*?(?<!:)<\/strong><\/[a-z0-9]+>.*?(?=<)/is", # strong текст ( часто имена )
         "/<[a-z0-9]+><small>.*?<\/small><\/[a-z0-9]+>/is", # мелький текст
         '/(?:<strong>.{0,20}warning.*?<\/strong>){0,1}(?<=>)[a-z\s\d&;-]*<a.*?<\/a>/is', # ссылка и его текст
         '/(?<=<li>)<br>/is', # br теги до текста в личке
@@ -73,7 +73,9 @@ class Parser extends HtmlParser
 
         // чек на оригинальность
         foreach($shorts as $li) {
-            if(!in_array($li, $this->short_desc, true)) {
+            if(!in_array($li,$this->short_desc,false)) {
+                var_dump($this->short_desc);
+                var_dump($li);
                 $this->short_desc[] = $li;
             }
         }
@@ -90,6 +92,9 @@ class Parser extends HtmlParser
                 }
             }
         }
+
+        // вырезаем гарантию из атрибутов еслы есть
+        unset($this->attributes['Warranty'],$this->attributes['warranty']);
 
         // парсирование json data с саита
         $child_matches = [];
