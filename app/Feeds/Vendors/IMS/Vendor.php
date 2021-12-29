@@ -13,6 +13,8 @@ class Vendor extends SitemapHttpProcessor
 
     protected array $first = ['https://www.allegromedical.com/pub/sitemap/allegromedical/products.xml'];
 
+    protected ?int $max_products = 50;
+
     public function filterProductLinks(Link $link): bool
     {
         return str_contains($link->getUrl(), '/products/');

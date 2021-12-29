@@ -31,9 +31,9 @@ class Parser extends HtmlParser
         "/(?:<center>.{0,5}){0,1}<h\d>.{0,5}.{0,50}.{0,5}<\/h\d>(?:.{0,5}<\/center>){0,1}/is", # имья продукта
         "/<li>[a-z\s'<>\-\d]{0,50}warranty.*?<\/li>/is", #  гарантии в features
         "/<center>.{0,5}<img.*<\/center>/is", # изображение
-        "/<(?!li)[a-z0-9]+><strong>.*?(?<!:)<\/strong><\/[a-z0-9]+>.*?(?=<)/is", # strong текст ( часто имена )
+        "/(?<!li>)<strong>[^:]{0,50}(?<!:)<\/strong>/is", # strong текст ( часто имена )
         "/<[a-z0-9]+><small>.*?<\/small><\/[a-z0-9]+>/is", # мелький текст
-        '/(?:<strong>.{0,20}warning.*?<\/strong>){0,1}(?<=>)[a-z\s\d&;-]*<a.*?<\/a>/isu', # ссылка и его текст
+        '/(?:<li>){0,1}(?:<strong>.{0,20}warning.*?<\/strong>){0,1}(?<=>)[a-z\s\d&;-]*<a.*?<\/a>(?:.{0,20}<\/li>){0,1}/is', # ссылка и его текст
         '/(?<=<li>)<br>/is', # br теги до текста в личке
         '/<br>(?=<\/li>)/is', # br теги после текста в личке
         '/(?<=>)[a-z\s\d]+available in.*?(?=\<)/is', # строки про других продуктов
@@ -53,7 +53,7 @@ class Parser extends HtmlParser
 
         // возмём features и атрибуты из описания
 
-        $results = $this->getShortsAndAttributesInDescription($this->description,["~(?<content_list><p.{0,80}(?:<b.{0,80}>){0,1}.{0,40}features.*?<\/ul>)~sim", "~(?<content_list><p>.{0,100}specifications.{0,40}<(?:ul|table)>.*?<\/(?:ul|table)>)~sim"]);
+        $results = $this->getShortsAndAttributesInDescription($this->description,["~(?<content_list><p.{0,80}(?:<b.{0,80}>){0,1}.{0,40}features.{0,50}<ul>.*?<\/ul>)~sim", "~(?<content_list><p>.{0,100}specifications.{0,40}<(?:ul|table)>.*?<\/(?:ul|table)>)~sim"]);
 
         $this->description = $results['description'];
         $shorts = $results['short_description'];
@@ -61,8 +61,8 @@ class Parser extends HtmlParser
 
         // если метод не заработает правельно, возмём features самы
         $matches = [];
-        preg_match('/<p.{0,80}(?:<b.{0,80}>){0,1}.{0,40}features.*?<\/ul>/is',$this->description,$matches);
-        preg_replace('/<p.{0,80}(?:<b.{0,80}>){0,1}.{0,40}features.*?<\/ul>/is','',$this->description);
+        preg_match('/<p.{0,80}(?:<b.{0,80}>){0,1}.{0,40}features.{0,50}<ul>.*?<\/ul>/is',$this->description,$matches);
+        preg_replace('/<p.{0,80}(?:<b.{0,80}>){0,1}.{0,40}features.{0,50}<ul>.*?<\/ul>/is','',$this->description);
 
         foreach($matches as $match) {
             $ul = new ParserCrawler($match);
