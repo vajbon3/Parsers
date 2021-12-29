@@ -13,7 +13,13 @@ class Vendor extends SitemapHttpProcessor
 
     protected array $first = ['https://www.allegromedical.com/pub/sitemap/allegromedical/products.xml'];
 
-    protected ?int $max_products = 50;
+    public array $custom_products = [
+        'https://www.allegromedical.com/products/heated-booties-1-pair/', # removed almost all desc
+        'https://www.allegromedical.com/products/zoll-aed-plus-defibrillator/',
+        # leave list in desc
+        # its also duplicated
+        # important features empty <li> elements
+    ];
 
     public function filterProductLinks(Link $link): bool
     {
