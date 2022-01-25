@@ -22,7 +22,7 @@ class Parser extends HtmlParser
         '/[a-z]+@[a-z]+\.[a-z]+/is', # email
         '/\$\d+(?:\.\d{1,2}){0,1}/is', # цена
         '/pictured below/is', # текст до изображения
-        "/warranty.{0,20}:/is", # гарантии
+        "/warranty.{0,20}/is", # гарантии
         ];
 
     protected array $clean_description_patterns = [
@@ -39,6 +39,21 @@ class Parser extends HtmlParser
         '/(?<=>)[a-z\s\d]+available in.*?(?=\<)/is', # строки про других продуктов
         '/<table.*<\/table>/is' # удалить таблицу
     ];
+
+    protected array $shorts_and_attributes_patterns = [
+        "/warranty/is", #  гарантии в features
+    ];
+
+    protected function clean_shorts(): void
+    {
+        $matches = [];
+
+        foreach($this->shorts_and_attributes_patterns as $pattern) {
+            $this->short_desc = array_filter($this->short_desc, static function ($short) use(&$pattern) {
+                return !preg_match($pattern,$short);
+            });
+        }
+    }
 
     public function beforeParse(): void
     {
@@ -59,10 +74,12 @@ class Parser extends HtmlParser
         $shorts = $results['short_description'];
         $this->attributes = $results['attributes'] ?? [];
 
+
         // если метод не заработает правельно, возмём features самы
         $matches = [];
         preg_match('/<p.{0,80}(?:<b.{0,80}>){0,1}.{0,40}features.{0,50}<ul>.*?<\/ul>/is',$this->description,$matches);
-        preg_replace('/<p.{0,80}(?:<b.{0,80}>){0,1}.{0,40}features.{0,50}<ul>.*?<\/ul>/is','',$this->description);
+        $this->description = preg_replace('/<p.{0,80}(?:<b.{0,80}>){0,1}.{0,40}features.{0,50}<ul>.*?<\/ul>/is','',$this->description);
+
 
         foreach($matches as $match) {
             $ul = new ParserCrawler($match);
@@ -77,6 +94,9 @@ class Parser extends HtmlParser
                 $this->short_desc[] = $li;
             }
         }
+
+        // удаляем из shorts с регекс-ом
+        $this->clean_shorts();
 
         if($this->description === "") {
             $this->description = $this->getProduct();
